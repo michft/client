@@ -3,7 +3,7 @@ import React, {Component} from 'react'
 import {globalStyles, globalMargins, globalColors} from '../../styles'
 import {Box, Button, Icon, Text} from '../../common-adapters'
 import {connect} from 'react-redux'
-import {navigateUp} from '../../actions/router'
+import {navigateUp} from '../../actions/route-tree'
 
 import type {OwnProps, Props} from './index'
 
@@ -50,9 +50,10 @@ const linkContainerStyle = {
 }
 
 export default connect(
-  (state: any, ownProps: OwnProps) => {
-    return ownProps
-  },
+  (state: any, {routeProps: {email, link}}) => ({
+    email,
+    link,
+  }),
   (dispatch: any) => {
     return {
       onClose: () => dispatch(navigateUp()),

@@ -43,6 +43,13 @@ export type DeleteAccountForever = NoErrorTypedAction<'settings:deleteAccountFor
 export type PlanLevel = 'Basic' | 'Gold' | 'Friend'
 const plans: Array<PlanLevel> = ['Basic', 'Gold', 'Friend']
 
+export const landingTab = 'settingsTabs:landingTab'
+export const updatePaymentTab = 'settingsTabs:updatePaymentTab'
+export const invitationsTab = 'settingsTabs:invitationsTab'
+export const notificationsTab = 'settingsTabs:notificationsTab'
+export const deleteMeTab = 'settingsTabs:deleteMeTab'
+export const devMenuTab = 'settingsTabs:devMenuTab'
+
 export type Actions = InvitesRefresh | NotificationsRefresh | NotificationsRefreshed | NotificationsSave | NotificationsSaved | NotificationsToggle | SetAllowDeleteAccount
 
 export type Invitation = {

@@ -4,7 +4,7 @@ import {apiserverGetRpcPromise, apiserverPostRpcPromise, apiserverPostJSONRpcPro
 import {setDeletedSelf} from '../actions/login'
 import {call, put, select, fork, cancel} from 'redux-saga/effects'
 import {takeEvery, takeLatest, delay} from 'redux-saga'
-import {routeAppend} from '../actions/router'
+import {navigateAppend} from '../actions/route-tree'
 
 import type {SagaGenerator} from '../constants/types/saga'
 import type {
@@ -199,9 +199,11 @@ function * sendInviteSaga (invitesSendAction: InvitesSend): SagaGenerator<any, a
         type: Constants.invitesSent,
         payload: {email, invitationId},
       }: InvitesSent))
-      yield put(routeAppend({
-        path: 'inviteSent',
-        props: {email, link},
+      // TODO: if the user changes their route while working, this may lead to an invalid route
+      yield put(navigateAppend({
+        selected: 'inviteSent',
+        email,
+        link,
       }))
     }
   } catch (e) {

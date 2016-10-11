@@ -1,95 +1,43 @@
 // @flow
-import DeleteContainer from './delete/container'
-import InvitationsContainer from './invites/container'
-import LandingContainer from './landing/container'
-import UpdatePayment from './payment/container'
-import NavSettings from './nav'
-import NotificationsContainer from './notifications/container'
 import React, {Component} from 'react'
-import SettingsHelp from './help.desktop'
+import SettingsNav, {SettingsItem} from './nav'
+import {Box} from '../common-adapters'
+import {globalStyles, globalColors, globalMargins} from '../styles'
 
-import type {SettingsItem} from './nav'
 import type {Props} from './render'
 
-type State = {
-    content: any,
-    items: Array<SettingsItem>,
+function Banner ({element, type}: {element: React$Element<*>, type: BannerType}) {
+  return (
+    <Box style={{...commonBannerStyle, ...variantBannerStyle[type]}}>
+      {element}
+    </Box>
+  )
 }
 
-class Render extends Component<void, Props, State> {
-  state: State;
-  _textToContent: {[key: string]: any}
-
-  constructor (props: Props) {
-    super(props)
-
-    this._textToContent = {
-      'Your Account': <LandingContainer />,
-      'Update Payment': <UpdatePayment />,
-      'Invitations': <InvitationsContainer />,
-      'Notifications': <NotificationsContainer />,
-      'Delete me': <DeleteContainer />,
-      ...(__DEV__ ? {'Dev Menu': null} : {}),
-    }
-
-    // TODO handle badges and etc
-    const items = [{
-      text: 'Your Account',
-      onClick: () => this._select('Your Account'),
-      selected: true,
-    }, {
-      // TODO(mm) kill this when we build our routing stuff
-      text: 'Update Payment',
-      onClick: () => this._select('Update Payment'),
-    }, {
-      text: 'Invitations',
-      onClick: () => this._select('Invitations'),
-    }, {
-      text: 'Notifications',
-      onClick: () => this._select('Notifications'),
-    }, {
-      text: 'Delete me',
-      onClick: () => this._select('Delete me'),
-    },
-      ...(__DEV__ ? [{
-        text: 'Dev Menu',
-        onClick: () => props.onDevMenu(),
-      }] : []),
-    ]
-
-    this.state = {
-      content: this._textToContent[items[0].text],
-      items,
-    }
-  }
-
-  _select (key: string) {
-    const items = this.state.items.map(item => {
-      return {
-        ...item,
-        selected: item.text === key,
-      }
-    })
-
-    this.setState({
-      content: this._textToContent[key],
-      items,
-    })
-  }
-
-  _renderComingSoon () {
+function SettingsContainer (props: Props) {
+  if (props.showComingSoon) {
     return <SettingsHelp />
   }
 
-  render () {
-    if (this.props.showComingSoon) {
-      return this._renderComingSoon()
-    }
-
-    return <NavSettings
-      content={this.state.content}
-      items={this.state.items} />
-  }
+  return (
+    <Box style={{...globalStyles.flexBoxRow, flex: 1}}>
+      {!!props.bannerElement && <Banner element={props.bannerElement} type={props.bannerType || 'green'} />}
+      {!props.isModal && <SettingsNav selectedTab={props.selectedTab} onTabChange={props.onTabChange} />}
+      <Box style={{...globalStyles.flexBoxRow, flex: 1, overflow: 'auto'}}>
+        {props.children}
+      </Box>
+    </Box>
+  )
 }
 
-export default Render
+const commonBannerStyle = {
+  ...globalStyles.flexBoxRow,
+  minHeight: 48,
+}
+
+const variantBannerStyle = {
+  'red': {backgroundColor: globalColors.red},
+  'green': {backgroundColor: globalColors.green},
+}
+
+export default SettingsContainer

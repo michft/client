@@ -3,7 +3,7 @@
  * The main renderer. Holds the global store. When it changes we send it to the main thread which then sends it out to subscribers
  */
 
-import Nav from '../shared/nav.desktop'
+import Main from '../shared/main.desktop'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import RemoteManager from './remote-manager'
@@ -89,7 +89,7 @@ function setupApp (store) {
   window.addEventListener('online', () => store.dispatch(bootstrap()))
 }
 
-function render (store, NavComponent) {
+function render (store, MainComponent) {
   let dt
   if (__DEV__ && reduxDevToolsEnable) { // eslint-disable-line no-undef
     const DevTools = require('./redux-dev-tools').default
@@ -101,7 +101,7 @@ function render (store, NavComponent) {
       <Root store={store}>
         <div style={{display: 'flex', flex: 1}}>
           <RemoteManager />
-          <NavComponent />
+          <MainComponent />
           {dt}
         </div>
       </Root>
@@ -116,8 +116,8 @@ function setupHMR (store) {
   module.hot.accept('../shared/nav.desktop', () => {
     try {
       store.dispatch({type: updateReloading, payload: {reloading: true}})
-      const NewNav = require('../shared/nav.desktop').default
-      render(store, NewNav)
+      const NewMain = require('../shared/main.desktop').default
+      render(store, NewMain)
       engine().reset()
     } finally {
       setTimeout(() => store.dispatch({type: updateReloading, payload: {reloading: false}}), 10e3)
@@ -134,7 +134,7 @@ function load () {
   const store = setupStore()
   setupApp(store)
   setupHMR(store)
-  render(store, Nav)
+  render(store, Main)
 }
 
 window.load = load

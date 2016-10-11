@@ -9,19 +9,11 @@ import {call, put, select} from 'redux-saga/effects'
 import {takeLatest, takeEvery} from 'redux-saga'
 
 import type {Action} from '../constants/types/flux'
-import type {FavoriteAdd, FavoriteAdded, FavoriteList, FavoriteListed, FavoriteIgnore, FavoriteIgnored, FolderState, FavoriteSwitchTab, FavoriteToggleIgnored, MarkTLFCreated} from '../constants/favorite'
+import type {FavoriteAdd, FavoriteAdded, FavoriteList, FavoriteListed, FavoriteIgnore, FavoriteIgnored, FolderState, MarkTLFCreated} from '../constants/favorite'
 import type {FolderRPCWithMeta} from '../constants/folders'
 import type {SagaGenerator} from '../constants/types/saga'
 
 const {folderFromFolderRPCWithMeta, folderRPCFromPath} = Constants
-
-function switchTab (showingPrivate: boolean): FavoriteSwitchTab {
-  return {type: Constants.favoriteSwitchTab, payload: {showingPrivate}, error: false}
-}
-
-function toggleShowIgnored (isPrivate: boolean): FavoriteToggleIgnored {
-  return {type: Constants.favoriteToggleIgnored, payload: {isPrivate}, error: false}
-}
 
 function favoriteList (): FavoriteList {
   return {type: Constants.favoriteList, payload: undefined}
@@ -275,8 +267,6 @@ export {
   favoriteList,
   ignoreFolder,
   markTLFCreated,
-  switchTab,
-  toggleShowIgnored,
 }
 
 export default favoriteSaga

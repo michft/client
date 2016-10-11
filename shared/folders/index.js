@@ -5,7 +5,7 @@ import Render from './render'
 import {connect} from 'react-redux'
 import {favoriteList, switchTab, toggleShowIgnored as onToggleShowIgnored} from '../actions/favorite'
 import {openInKBFS} from '../actions/kbfs'
-import {routeAppend} from '../actions/router'
+import {switchTo, navigateAppend} from '../actions/route-tree'
 
 import type {TypedState} from '../constants/reducer'
 import type {FolderState} from '../constants/favorite'
@@ -16,11 +16,10 @@ export type Props = {
   openInKBFS: (path: string) => void,
   showingPrivate: boolean,
   username: ?string,
-  routeAppend: (path: any) => void,
+  navigateAppend: (path: any) => void,
   switchTab: (showingPrivate: boolean) => void,
   onToggleShowIgnored: (isPrivate: boolean) => void,
-  publicShowingIgnored: boolean,
-  privateShowingIgnored: boolean,
+  showingIgnored: boolean,
 }
 
 class Folders extends Component<void, Props, void> {
@@ -32,15 +31,14 @@ class Folders extends Component<void, Props, void> {
     return (
       <Render
         {...this.props.folderState}
-        onClick={path => this.props.routeAppend(path)}
-        onRekey={path => this.props.routeAppend(path)}
+        onClick={path => this.props.navigateAppend(path)}  //FIXME
+        onRekey={path => this.props.navigateAppend(path)}
         onOpen={path => this.props.openInKBFS(path)}
         onSwitchTab={showingPrivate => this.props.switchTab(showingPrivate)}
         showingPrivate={this.props.showingPrivate}
         username={this.props.username}
         onToggleShowIgnored={this.props.onToggleShowIgnored}
-        publicShowingIgnored={this.props.publicShowingIgnored}
-        privateShowingIgnored={this.props.privateShowingIgnored}
+        showingIgnored={this.props.showingIgnored}
       />
     )
   }
@@ -55,18 +53,17 @@ class Folders extends Component<void, Props, void> {
 }
 
 export default connect(
-  (state: TypedState) => ({
+  (state: TypedState, {routeProps, routeState}) => ({
     username: state.config.username,
     folderState: state.favorite ? state.favorite.folderState : null,
-    showingPrivate: !!state.favorite && state.favorite.viewState.showingPrivate,
-    publicShowingIgnored: !!state.favorite && state.favorite.viewState.publicIgnoredOpen,
-    privateShowingIgnored: !!state.favorite && state.favorite.viewState.privateIgnoredOpen,
+    showingPrivate: !!state.favorite && routeProps.showingPrivate,
+    showingIgnored: !!state.favorite && routeState.showingIgnored,
   }),
-  (dispatch: any) => ({
+  (dispatch: any, {routePath, routeState, setRouteState}) => ({
     favoriteList: () => { dispatch(favoriteList()) },
-    routeAppend: path => { dispatch(routeAppend(path)) },
+    navigateAppend: path => { dispatch(navigateAppend(path)) },
     openInKBFS: path => { dispatch(openInKBFS(path)) },
-    switchTab: showingPrivate => { dispatch(switchTab(showingPrivate)) },
-    onToggleShowIgnored: isPrivate => { dispatch(onToggleShowIgnored(isPrivate)) },
+    switchTab: showingPrivate => { dispatch(switchTo(...routePath.slice(0, -1), showingPrivate ? 'private' : 'public')) },
+    onToggleShowIgnored: () => { setRouteState({showingIgnored: !routeState.showingIgnored}) }
   })
 )(Folders)

@@ -1,52 +1,47 @@
 // @flow
 import React, {Component} from 'react'
+import {TypedConnector} from '../../util/typed-connect'
 import {connect} from 'react-redux'
 import Invites from './index'
 import {invitesReclaim, invitesRefresh, invitesSend, notificationsSave, notificationsToggle} from '../../actions/settings'
 
-import type {TypedState} from '../../constants/reducer'
+import type {RouteComponentProps} from '../../route-tree'
 import type {Props} from './index'
+import type {TypedState} from '../../constants/reducer'
+import type {TypedDispatch} from '../../constants/types/flux'
 
-type State = {
+export type RouteState = {
   email: string,
   message: string,
 }
 
-class InvitationsContainer extends Component<void, Props, State> {
-  state: State;
-
-  constructor (props: Props) {
-    super(props)
-    this.state = {
-      email: this.props.inviteEmail,
-      message: this.props.inviteMessage,
-    }
-  }
-
+class InvitationsContainer extends Component<void, Props, void> {
   componentWillMount () {
     this.props.onRefresh()
   }
 
-  onGenerateInvitation () {
-    const {email, message} = this.state
-    this.props.onGenerateInvitation(email, message)
-  }
-
   render () {
+    console.log(this.props)
     return <Invites
       {...this.props}
-      onChangeInviteEmail={email => this.setState({email})}
-      onChangeInviteMessage={message => this.setState({message})}
-      onGenerateInvitation={() => this.onGenerateInvitation()}
-      showMessageField={!!this.state.email}
+      showMessageField={!!this.props.inviteEmail}
     />
   }
 }
 
+// move to typedconnect
+// lenses that return where they came from in their composed stuff
+
 export default connect(
-  (state: TypedState, ownProps: {}) => state.settings.invites,
-  (dispatch: any, ownProps: {}) => ({
-    onGenerateInvitation: (email: string, message: string) => dispatch(invitesSend(email, message)),
+  (state: TypedState, {routeState}) => ({
+    ...state.settings.invites,
+    inviteEmail: routeState.inviteEmail,
+    inviteMessage: routeState.inviteMessage,
+  }),
+  (dispatch: any, {routeState, setRouteState}) => ({
+    onChangeInviteEmail: inviteEmail => { setRouteState({inviteEmail}) },
+    onChangeInviteMessage: inviteMessage => { setRouteState({inviteMessage}) },
+    onGenerateInvitation: (email: string, message: string) => dispatch(invitesSend(routeState.email, routeState.message)),
     onRefresh: () => dispatch(invitesRefresh()),
     onReclaimInvitation: (inviteId: string) => dispatch(invitesReclaim(inviteId)),
     onSave: () => dispatch(notificationsSave()),

@@ -5,7 +5,7 @@ import Render from './index.render'
 import type {Props} from './index.render'
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
-import {navigateUp} from '../../actions/router'
+import {navigateUp} from '../../actions/route-tree'
 
 class DeviceRevoke extends Component<void, Props, void> {
   static parseRoute (currentPath) {
@@ -35,7 +35,7 @@ class DeviceRevoke extends Component<void, Props, void> {
 
 export default connect(
   (state: any, ownProps) => {
-    return ownProps
+    return ownProps.routeProps
   },
   (dispatch: any) => {
     return {
