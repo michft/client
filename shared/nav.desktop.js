@@ -50,7 +50,6 @@ type Props = {
 class Nav extends Component<void, Props, void> {
   _lastCheckedTab: ?Tabs;
   _checkingTab: boolean;
-  _originalSize: $Shape<{width: number, height: number}>;
   _handleKeyDown: (e: SyntheticKeyboardEvent) => void;
 
   constructor (props) {
