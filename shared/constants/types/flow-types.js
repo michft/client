@@ -1269,6 +1269,42 @@ export function kbfsFSSyncStatusRpcPromise (request: $Exact<requestCommon & requ
   return new Promise((resolve, reject) => { kbfsFSSyncStatusRpc({...request, callback: (error, result) => { if (error) { reject(error) } else { resolve(result) } }}) })
 }
 
+export function kbfs_mountGetAllAvailableDriveLettersRpc (request: Exact<requestCommon & {callback?: ?(err: ?any, response: kbfs_mountGetAllAvailableDriveLettersResult) => void}>) {
+  engineRpcOutgoing({...request, method: 'kbfs_mount.GetAllAvailableDriveLetters'})
+}
+
+export function kbfs_mountGetAllAvailableDriveLettersRpcChannelMap (channelConfig: ChannelConfig<*>, request: $Exact<requestCommon & {callback?: ?(err: ?any, response: kbfs_mountGetAllAvailableDriveLettersResult) => void}>): ChannelMap<*> {
+  return _channelMapRpcHelper(channelConfig, (incomingCallMap, callback) => kbfs_mountGetAllAvailableDriveLettersRpc({...request, incomingCallMap, callback}))
+}
+
+export function kbfs_mountGetAllAvailableDriveLettersRpcPromise (request: $Exact<requestCommon & {callback?: ?(err: ?any, response: kbfs_mountGetAllAvailableDriveLettersResult) => void}>): Promise<kbfs_mountGetAllAvailableDriveLettersResult> {
+  return new Promise((resolve, reject) => { kbfs_mountGetAllAvailableDriveLettersRpc({...request, callback: (error, result) => { if (error) { reject(error) } else { resolve(result) } }}) })
+}
+
+export function kbfs_mountGetCurrentDriveLetterRpc (request: Exact<requestCommon & {callback?: ?(err: ?any, response: kbfs_mountGetCurrentDriveLetterResult) => void}>) {
+  engineRpcOutgoing({...request, method: 'kbfs_mount.GetCurrentDriveLetter'})
+}
+
+export function kbfs_mountGetCurrentDriveLetterRpcChannelMap (channelConfig: ChannelConfig<*>, request: $Exact<requestCommon & {callback?: ?(err: ?any, response: kbfs_mountGetCurrentDriveLetterResult) => void}>): ChannelMap<*> {
+  return _channelMapRpcHelper(channelConfig, (incomingCallMap, callback) => kbfs_mountGetCurrentDriveLetterRpc({...request, incomingCallMap, callback}))
+}
+
+export function kbfs_mountGetCurrentDriveLetterRpcPromise (request: $Exact<requestCommon & {callback?: ?(err: ?any, response: kbfs_mountGetCurrentDriveLetterResult) => void}>): Promise<kbfs_mountGetCurrentDriveLetterResult> {
+  return new Promise((resolve, reject) => { kbfs_mountGetCurrentDriveLetterRpc({...request, callback: (error, result) => { if (error) { reject(error) } else { resolve(result) } }}) })
+}
+
+export function kbfs_mountSetCurrentDriveLetterRpc (request: Exact<requestCommon & requestErrorCallback & {param: kbfs_mountSetCurrentDriveLetterRpcParam}>) {
+  engineRpcOutgoing({...request, method: 'kbfs_mount.SetCurrentDriveLetter'})
+}
+
+export function kbfs_mountSetCurrentDriveLetterRpcChannelMap (channelConfig: ChannelConfig<*>, request: $Exact<requestCommon & requestErrorCallback & {param: kbfs_mountSetCurrentDriveLetterRpcParam}>): ChannelMap<*> {
+  return _channelMapRpcHelper(channelConfig, (incomingCallMap, callback) => kbfs_mountSetCurrentDriveLetterRpc({...request, incomingCallMap, callback}))
+}
+
+export function kbfs_mountSetCurrentDriveLetterRpcPromise (request: $Exact<requestCommon & requestErrorCallback & {param: kbfs_mountSetCurrentDriveLetterRpcParam}>): Promise<any> {
+  return new Promise((resolve, reject) => { kbfs_mountSetCurrentDriveLetterRpc({...request, callback: (error, result) => { if (error) { reject(error) } else { resolve(result) } }}) })
+}
+
 export function logRegisterLoggerRpc (request: Exact<requestCommon & requestErrorCallback & {param: logRegisterLoggerRpcParam}>) {
   engineRpcOutgoing({...request, method: 'log.registerLogger'})
 }
@@ -4277,6 +4313,10 @@ export type kbfsFSSyncStatusRpcParam = Exact<{
   requestID: int
 }>
 
+export type kbfs_mountSetCurrentDriveLetterRpcParam = Exact<{
+  drive: string
+}>
+
 export type logRegisterLoggerRpcParam = Exact<{
   name: string,
   level: LogLevel
@@ -4946,6 +4986,10 @@ type identifyUiConfirmResult = ConfirmResult
 
 type identifyUiDelegateIdentifyUIResult = int
 
+type kbfs_mountGetAllAvailableDriveLettersResult = ?Array<string>
+
+type kbfs_mountGetCurrentDriveLetterResult = string
+
 type loginGetConfiguredAccountsResult = ?Array<ConfiguredAccount>
 
 type loginUiGetEmailOrUsernameResult = string
@@ -5161,6 +5205,9 @@ export type rpc =
   | kbfsFSEventRpc
   | kbfsFSSyncEventRpc
   | kbfsFSSyncStatusRpc
+  | kbfs_mountGetAllAvailableDriveLettersRpc
+  | kbfs_mountGetCurrentDriveLetterRpc
+  | kbfs_mountSetCurrentDriveLetterRpc
   | logRegisterLoggerRpc
   | loginAccountDeleteRpc
   | loginClearStoredSecretRpc
