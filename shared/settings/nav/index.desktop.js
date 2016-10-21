@@ -53,7 +53,7 @@ function SettingsNav ({selectedTab, onTabChange}: Props) {
       />
       {__DEV__ &&
         <SettingsItem
-          text='Dev Menu 😎'
+          text='😎 Dev Menu'
           selected={selectedTab === devMenuTab}
           onClick={() => onTabChange(devMenuTab)}
         />
