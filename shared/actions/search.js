@@ -239,10 +239,3 @@ export function reset (): Reset {
     payload: {},
   }
 }
-
-export function setActive (active: boolean): SetActive {
-  return {
-    type: Constants.setActive,
-    payload: {active},
-  }
-}

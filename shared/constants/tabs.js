@@ -14,6 +14,8 @@ type DevicesTab = 'tabs:devicesTab'
 export const devicesTab = 'tabs:devicesTab'
 type FolderTab = 'tabs:folderTab'
 export const folderTab = 'tabs:folderTab'
+type SearchTab = 'tabs:searchTab'
+export const searchTab = 'tabs:searchTab'
 type SettingsTab = 'tabs:settingsTab'
 export const settingsTab = 'tabs:settingsTab'
 

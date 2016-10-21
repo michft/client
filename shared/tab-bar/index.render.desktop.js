@@ -5,8 +5,14 @@ import {Box, Avatar} from '../common-adapters'
 import {TabBarButton, TabBarItem} from '../common-adapters/tab-bar'
 import {globalStyles, globalColors} from '../styles'
 import flags from '../util/feature-flags'
-
-import {profileTab, peopleTab, folderTab, devicesTab, settingsTab} from '../constants/tabs'
+import {
+  profileTab,
+  peopleTab,
+  folderTab,
+  devicesTab,
+  searchTab,
+  settingsTab,
+} from '../constants/tabs'
 
 import type {VisibleTab} from '../constants/tabs'
 import type {IconType} from '../common-adapters/icon'
@@ -38,54 +44,52 @@ function ProfileTabBarButton ({selected, username, badgeNumber, onClick}: {selec
   )
 }
 
-export default function TabBar (props) {
-  const selected = props.searchActive ? searchButton : props.selectedTab
-
+export default function TabBar ({selectedTab, onTabClick, username, badgeNumbers}) {
   return (
     <Box style={stylesTabBar}>
       <TabBarButton
         label='Search'
-        selected={props.searchActive}
-        onClick={() => props.onSearchClick()}
+        selected={selectedTab === searchTab}
+        onClick={() => onTabClick(searchTab)}
         source={{type: 'nav', icon: 'iconfont-nav-search'}}
         style={stylesTabButton}
       />
       <TabBarButton
         label='Folders'
-        selected={selected === folderTab}
-        onClick={() => props.onTabClick(folderTab)}
-        badgeNumber={props.badgeNumbers[folderTab]}
+        selected={selectedTab === folderTab}
+        onClick={() => onTabClick(folderTab)}
+        badgeNumber={badgeNumbers[folderTab]}
         source={{type: 'nav', icon: 'iconfont-folder'}}
         style={stylesTabButton}
       />
       <TabBarButton
         label='Devices'
-        selected={selected === devicesTab}
-        onClick={() => props.onTabClick(devicesTab)}
-        badgeNumber={props.badgeNumbers[devicesTab]}
+        selected={selectedTab === devicesTab}
+        onClick={() => onTabClick(devicesTab)}
+        badgeNumber={badgeNumbers[devicesTab]}
         source={{type: 'nav', icon: 'iconfont-device'}}
         style={stylesTabButton}
       />
       <TabBarButton
         label='Settings'
-        selected={selected === settingsTab}
-        onClick={() => props.onTabClick(settingsTab)}
-        badgeNumber={props.badgeNumbers[settingsTab]}
+        selected={selectedTab === settingsTab}
+        onClick={() => onTabClick(settingsTab)}
+        badgeNumber={badgeNumbers[settingsTab]}
         source={{type: 'nav', icon: 'iconfont-settings'}}
         style={stylesTabButton}
       />
       <ProfileTabBarButton
-        username={props.username}
-        selected={selected === profileTab}
-        onClick={() => props.onTabClick(profileTab)}
-        badgeNumber={props.badgeNumbers[profileTab]}
+        username={username}
+        selected={selectedTab === profileTab}
+        onClick={() => onTabClick(profileTab)}
+        badgeNumber={badgeNumbers[profileTab]}
       />
       {flags.tabPeopleEnabled &&
         <TabBarButton
           label='People'
-          selected={selected === peopleTab}
-          onClick={() => props.onTabClick(peopleTab)}
-          badgeNumber={props.badgeNumbers[peopleTab]}
+          selected={selectedTab === peopleTab}
+          onClick={() => onTabClick(peopleTab)}
+          badgeNumber={badgeNumbers[peopleTab]}
           source={{type: 'nav', icon: 'iconfont-people'}}
           style={stylesTabButton}
         />

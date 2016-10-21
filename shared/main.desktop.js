@@ -23,7 +23,6 @@ import GlobalError from './global-errors/container'
 
 import {profileTab, folderTab, chatTab, peopleTab, devicesTab, settingsTab, loginTab} from './constants/tabs'
 import {navigateBack, navigateUp, setRouteState} from './actions/route-tree'
-import {setActive} from './actions/search'
 import TabBar from './tab-bar/index.render'
 
 import type {RouteNodeRecord} from './route-tree'
@@ -36,8 +35,6 @@ type Props = {
   navigateBack: () => void,
   navigateUp: () => void,
   folderBadge: number,
-  searchActive: boolean,
-  setSearchActive: (active: boolean) => void,
 }
 
 class Main extends Component<void, Props, void> {
@@ -104,12 +101,6 @@ class Main extends Component<void, Props, void> {
       ipcRenderer.send(this.props.menuBadge ? 'showTrayRegular' : 'showTrayBadged')
     }
 
-    if (this.props.searchActive !== nextProps.searchActive) {
-      return true
-    }
-
-    //searchactive root route prop?
-
     return !this.props.routeTree.equals(nextProps.routeTree)
   }
 
@@ -140,13 +131,11 @@ const stylesTabsContainer = {
 // $FlowIssue type this connector
 export default connect(
   ({
-    search: {searchActive},
     routeTree,
     config: {extendedConfig, username},
     favorite: {publicBadge = 0, privateBadge = 0},
     notifications: {menuBadge}}) => ({
       routeTree,
-      searchActive,
       provisioned: extendedConfig && !!extendedConfig.defaultDeviceID,
       username,
       menuBadge,
@@ -157,7 +146,6 @@ export default connect(
       navigateBack: () => dispatch(navigateBack()),
       navigateUp: () => dispatch(navigateUp()),
       setRouteState: (path, partialState) => { dispatch(setRouteState(path, partialState)) },
-      setSearchActive: (active) => { dispatch(setActive(active)) },
     }
   }
 )(Main)

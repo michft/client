@@ -3,9 +3,17 @@ import * as I from 'immutable'
 import {Routes} from './route-tree'
 import devicesRoutes from './devices/routes'
 import foldersRoutes from './folders/routes'
+import searchRoutes from './search/routes'
 import settingsRoutes from './settings/routes'
 import Nav from './nav'
-import {profileTab, peopleTab, folderTab, devicesTab, settingsTab} from './constants/tabs'
+import {
+  profileTab,
+  peopleTab,
+  folderTab,
+  devicesTab,
+  searchTab,
+  settingsTab,
+} from './constants/tabs'
 
 const routeTree = Routes({
   selected: devicesTab,
@@ -13,6 +21,7 @@ const routeTree = Routes({
   children: {
     [folderTab]: foldersRoutes,
     [devicesTab]: devicesRoutes,
+    [searchTab]: searchRoutes,
     [settingsTab]: settingsRoutes,
   },
 })
