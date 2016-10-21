@@ -3,6 +3,7 @@ import * as I from 'immutable'
 import {Routes} from './route-tree'
 import devicesRoutes from './devices/routes'
 import foldersRoutes from './folders/routes'
+import profileRoutes from './profile/routes'
 import searchRoutes from './search/routes'
 import settingsRoutes from './settings/routes'
 import Nav from './nav'
@@ -21,6 +22,7 @@ const routeTree = Routes({
   children: {
     [folderTab]: foldersRoutes,
     [devicesTab]: devicesRoutes,
+    [profileTab]: profileRoutes,
     [searchTab]: searchRoutes,
     [settingsTab]: settingsRoutes,
   },
