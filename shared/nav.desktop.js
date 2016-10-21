@@ -34,7 +34,9 @@ function Nav (props) {
         badgeNumbers={{[folderTab]: props.folderBadge}}
       />
       <GlobalError />
-      {props.children}
+      <Box style={{...globalStyles.flexBoxColumn, flex: 1}}>
+        {props.children}
+      </Box>
     </Box>
   )
 }

@@ -20,7 +20,7 @@ function SettingsContainer (props: Props) {
   }
 
   return (
-    <Box style={{...globalStyles.flexBoxRow, flex: 1}}>
+    <Box style={globalStyles.flexBoxRow}>
       {!!props.bannerElement && <Banner element={props.bannerElement} type={props.bannerType || 'green'} />}
       {!props.isModal && <SettingsNav selectedTab={props.selectedTab} onTabChange={props.onTabChange} />}
       <Box style={{...globalStyles.flexBoxRow, flex: 1, overflow: 'auto'}}>
