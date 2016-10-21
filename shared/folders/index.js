@@ -1,5 +1,4 @@
 // @flow
-import Files from './files'
 import React, {Component} from 'react'
 import Render from './render'
 import {connect} from 'react-redux'
@@ -61,7 +60,7 @@ export default connect(
   }),
   (dispatch: any, {routePath, routeState, setRouteState}) => ({
     favoriteList: () => { dispatch(favoriteList()) },
-    navigateAppend: path => { dispatch(navigateAppend(path)) },
+    navigateAppend: path => { dispatch(navigateAppend({selected: 'files', path})) },
     openInKBFS: path => { dispatch(openInKBFS(path)) },
     switchTab: showingPrivate => { dispatch(switchTo(...routePath.slice(0, -1), showingPrivate ? 'private' : 'public')) },
     onToggleShowIgnored: () => { setRouteState({showingIgnored: !routeState.showingIgnored}) }
