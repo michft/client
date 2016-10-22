@@ -79,28 +79,28 @@ function _routeSet(path, routeTree) {
     return routeTree
   }
 
+  if (routeTree.recursive) {
+    const selectedStack = routeTree.selected === true ? I.List() : routeTree.selected
+      // FIXME: still a bit buggy, but mostly working
+      .mergeWith((prev, next) => (next && {
+        selected: next.selected,
+        props: next.hasOwnProperty('props') ? next.props : prev && prev.props,
+      }), I.Seq(path))
+      .takeUntil(n => !n || n.selected === true)
+      .map(_RouteStateNode)
+    return routeTree.set('selected', selectedStack.isEmpty ? true : selectedStack)
+  }
+
   let pathHead = path[0]
   let newRouteTree = routeTree.set('selected', pathHead.selected)
 
   if (pathHead.selected !== true) {
-    if (routeTree.recursive) {
-      const selectedStack = routeTree.selected === true ? I.List() : routeTree.selected
-        // FIXME: still a bit buggy, but mostly working
-        .mergeWith((prev, next) => (next && {
-          selected: next.selected,
-          props: next.hasOwnProperty('props') ? next.props : prev && prev.props,
-        }), I.Seq(path))
-        .takeUntil(n => n && n.selected === true)
-        .map(_RouteStateNode)
-      newRouteTree = newRouteTree.set('selected', selectedStack)
-    } else {
-      let newChild = _routeSet(path.slice(1), routeTree.children.get(pathHead.selected))
-      if (pathHead.hasOwnProperty('props')) {
-        newChild = newChild.set('props', I.fromJS(pathHead.props))
-      }
-      //TODO: reset state?
-      newRouteTree = newRouteTree.setIn(['children', pathHead.selected], newChild)
+    let newChild = _routeSet(path.slice(1), routeTree.children.get(pathHead.selected))
+    if (pathHead.hasOwnProperty('props')) {
+      newChild = newChild.set('props', I.fromJS(pathHead.props))
     }
+    //TODO: reset state?
+    newRouteTree = newRouteTree.setIn(['children', pathHead.selected], newChild)
   }
 
   return newRouteTree
