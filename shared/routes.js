@@ -16,6 +16,8 @@ import {
   settingsTab,
 } from './constants/tabs'
 
+//TODO: initialSelected?
+
 const routeTree = Routes({
   selected: devicesTab,
   wrapComponent: Nav,

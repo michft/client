@@ -17,17 +17,18 @@ import {getProfile, updateTrackers, onFollow, onUnfollow, openProofUrl} from '..
 import {isLoading} from '../constants/tracker'
 import {isTesting} from '../local-debug'
 import {openInKBFS} from '../actions/kbfs'
-import {routeAppend, navigateUp} from '../actions/router'
+import {navigateAppend, navigateUp} from '../actions/route-tree'
+import {profileTab} from '../constants/tabs'
 
 import type {MissingProof} from '../common-adapters/user-proofs'
 import type {Proof} from '../constants/tracker'
 import type {Props} from './index'
 
 type OwnProps = {
-  userOverride?: {
-    username: string,
-    uid: string,
-  },
+  routeProps: {
+    username: ?string,
+    uid: ?string,
+  }
 }
 
 type EitherProps<P> = {
@@ -40,6 +41,8 @@ type EitherProps<P> = {
 
 class ProfileContainer extends PureComponent<void, EitherProps<Props>, void> {
   static parseRoute (currentPath, uri) {
+    //TODO: replace
+    // profileIsRoot
     return {
       componentAtTop: {
         title: 'Profile',
@@ -73,29 +76,30 @@ class ProfileContainer extends PureComponent<void, EitherProps<Props>, void> {
 }
 
 export default connect(
-  (state, ownProps: OwnProps) => {
+  (state, {routeProps, routePath}: OwnProps) => {
     const myUsername = state.config.username
     const myUid = state.config.uid
-    const username = ownProps.userOverride && ownProps.userOverride.username || myUsername
-    const uid = ownProps.userOverride && ownProps.userOverride.uid || myUid
+    const username = !!routeProps.username ? routeProps.username : myUsername
+    const uid = !!routeProps.username ? routeProps.uid : myUid
 
     return {
       username,
       uid,
+      profileIsRoot: routePath.length === 1 && routePath[0] === profileTab,
       myUsername,
       trackerState: state.tracker.trackers[username],
     }
   },
   (dispatch: any, ownProps: OwnProps) => ({
     onUserClick: (username, uid) => { dispatch(onUserClick(username, uid)) },
-    onBack: ownProps.profileIsRoot ? null : () => { dispatch(navigateUp()) },
+    onBack: () => { dispatch(navigateUp()) },
     onFolderClick: folder => { dispatch(openInKBFS(folder.path)) },
-    onEditProfile: () => { dispatch(routeAppend({path: 'editprofile'})) },
-    onEditAvatar: () => { dispatch(routeAppend({path: 'editavatar'})) },
+    onEditProfile: () => { dispatch(routeAppend({selected: 'editprofile'})) },
+    onEditAvatar: () => { dispatch(routeAppend({selected: 'editavatar'})) },
     onMissingProofClick: (missingProof: MissingProof) => { dispatch(addProof(missingProof.type)) },
     onRecheckProof: (proof: Proof) => { dispatch(checkSpecificProof(proof && proof.id)) },
     onRevokeProof: (proof: Proof) => {
-      dispatch(routeAppend({path: 'Revoke', platform: proof.type, platformHandle: proof.name, proofId: proof.id}))
+      //TODO dispatch(routeAppend({path: 'Revoke', platform: proof.type, platformHandle: proof.name, proofId: proof.id}))
     },
     onViewProof: (proof: Proof) => { dispatch(openProofUrl(proof)) },
     getProfile: username => dispatch(getProfile(username)),
@@ -139,6 +143,7 @@ export default connect(
       followers: stateProps.trackerState ? stateProps.trackerState.trackers : [],
       following: stateProps.trackerState ? stateProps.trackerState.tracking : [],
       loading: isLoading(stateProps.trackerState) && !isTesting,
+      onBack: stateProps.profileIsRoot ? null : dispatchProps.onBack,
       onFollow: username => dispatchProps.onFollow(stateProps.username),
       onUnfollow: username => dispatchProps.onUnfollow(stateProps.username),
       onAcceptProofs: username => dispatchProps.onFollow(stateProps.username),

@@ -22,6 +22,8 @@ export function switchTo (...path): Action {
   }
 }
 
+//TODO: check type of path objects to ensure selected key
+
 // Navigate to a new absolute path.
 // You can specify paths as either strings:
 //   navigateTo('foo', 'bar')
