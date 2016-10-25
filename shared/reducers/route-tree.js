@@ -7,7 +7,7 @@ import {RouteNode, getPath, routeSetProps, routeSetState} from '../route-tree'
 import routeTree from '../routes'
 
 // TODO: use setRoutes action instead of static assignment
-const initialState = routeTree
+const initialState = RouteStateNode(routeTree.initialSelected)
 
 export default function routeTreeReducer (state: RouteTreeState = initialState, action: any): RouteTreeState {
   switch (action.type) {

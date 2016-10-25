@@ -57,9 +57,9 @@ const _RouteStateNode = I.Record({
   state: I.Map(),
 })
 
-export function Routes({selected, recursive, component, wrapComponent, staticProps, tags, initialState, children}) {
+export function Routes({initialSelected, recursive, component, wrapComponent, staticProps, tags, initialState, children}) {
   return _RouteNode({
-    selected: selected || true,
+    selected: initialSelected || true,
     recursive: recursive,
     component,
     wrapComponent,

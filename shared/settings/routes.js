@@ -21,7 +21,7 @@ import DevMenu from '../dev/dev-menu'
 import DumbSheet from '../dev/dumb-sheet'
 
 const routeTree = Routes({
-  selected: landingTab,
+  initialSelected: landingTab,
   wrapComponent: Settings,
   children: {
     [landingTab]: {
