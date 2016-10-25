@@ -13,10 +13,7 @@ const userProfileSubTree = {
 }
 
 const routeTree = Routes({
-  component: Profile,
-  children: {
-    profile: userProfileSubTree,
-  },
+  ...userProfileSubTree,
 })
 
 export default routeTree
