@@ -1,24 +1,29 @@
-import React from 'react'
+import React, {PureComponent} from 'react'
 
 function pathToString(path) {
   return path.join('/') || '/'
 }
 
-function renderRouteNode(RouteComponent, routeDef, routeState, path, setRouteState, leafTags, child) {
-  if (!RouteComponent) {
-    throw new Error(`Route missing component: ${pathToString(path)}`)
-  }
+class RenderRouteNode extends PureComponent {
+  render() {
+    const {wrap, routeDef, routeState, path, leafTags, partialState, children} = this.props
 
-  return (
-    <RouteComponent
-      routeProps={routeDef.staticProps.merge(routeState.props).toJS()}
-      routeState={routeDef.initialState.merge(routeState.state).toJS()}
-      routeSelected={routeState.selected}
-      routePath={path}
-      routeLeafTags={leafTags && leafTags.toJS()}
-      setRouteState={partialState => setRouteState(path, partialState)}
-    >{child}</RouteComponent>
-  )
+    const RouteComponent = wrap ? routeDef.wrapComponent : routeDef.component
+    if (!RouteComponent) {
+      throw new Error(`Route missing ${wrap ? 'wrap ': ''}component: ${pathToString(path)}`)
+    }
+
+    return (
+      <RouteComponent
+        routeProps={routeDef.staticProps.merge(routeState.props).toJS()}
+        routeState={routeDef.initialState.merge(routeState.state).toJS()}
+        routeSelected={routeState.selected}
+        routePath={path}
+        routeLeafTags={leafTags && leafTags.toJS()}
+        setRouteState={partialState => setRouteState(path, partialState)}
+      >{children}</RouteComponent>
+    )
+  }
 }
 
 function _RenderRoute({routeDef, routeState, setRouteState, path}): React$Element {
@@ -33,7 +38,14 @@ function _RenderRoute({routeDef, routeState, setRouteState, path}): React$Elemen
   const selected = routeState.selected
   if (selected === null) {
     return {
-      component: renderRouteNode(routeDef.component, routeDef, routeState, path, setRouteState),
+      component: (
+        <RenderRouteNode
+          routeDef={routeDef}
+          routeState={routeState}
+          path={path}
+          setRouteState={setRouteState}
+        />
+      ),
       leafTags: routeDef.tags,
     }
   } else {
@@ -45,9 +57,23 @@ function _RenderRoute({routeDef, routeState, setRouteState, path}): React$Elemen
     const childPath = path.concat(selected)
     const childRender = _RenderRoute({routeDef: childDef, routeState: childState, path: childPath, setRouteState})
 
-    const nextComponent = routeDef.wrapComponent
-      ? renderRouteNode(routeDef.wrapComponent, childDef, childState, path, setRouteState, childRender.leafTags, childRender.component)
-      : childRender.component
+    let nextComponent
+    if (!routeDef.wrapComponent) {
+      nextComponent = childRender.component
+    } else {
+      nextComponent = (
+        <RenderRouteNode
+          wrap={true}
+          routeDef={routeDef}
+          routeState={routeState}
+          path={path}
+          setRouteState={setRouteState}
+          leafTags={childRender.leafTags}
+        >
+          {childRender.component}
+        </RenderRouteNode>
+      )
+    }
 
     return {
       component: nextComponent,
