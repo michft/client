@@ -113,12 +113,13 @@ export default connect(
     onClickFollowing: (username, uid) => { dispatch(onClickFollowing(username, uid)) },
     onChangeFriendshipsTab: currentFriendshipsTab => { setRouteState({currentFriendshipsTab}) },
   }),
-  (stateProps, dispatchProps, ownProps: OwnProps) => {
+  (stateProps, dispatchProps) => {
+    const {username, uid} = stateProps
     const refresh = () => {
-      dispatchProps.getProfile(stateProps.username)
-      dispatchProps.updateTrackers(stateProps.username, stateProps.uid)
+      dispatchProps.getProfile(username)
+      dispatchProps.updateTrackers(username, uid)
     }
-    const isYou = stateProps.username === stateProps.myUsername
+    const isYou = username === stateProps.myUsername
     const bioEditFns = isYou ? {
       onBioEdit: dispatchProps.onEditProfile,
       onEditAvatarClick: dispatchProps.onEditAvatar,
@@ -133,23 +134,21 @@ export default connect(
       return {type: 'error', propError}
     }
 
-    const {username, uid} = stateProps
     const okProps = {
-      ...ownProps,
       ...stateProps.trackerState,
       ...dispatchProps,
       isYou,
       bioEditFns,
-      username: stateProps.username,
+      username: username,
       currentFriendshipsTab: stateProps.currentFriendshipsTab,
       refresh,
       followers: stateProps.trackerState ? stateProps.trackerState.trackers : [],
       following: stateProps.trackerState ? stateProps.trackerState.tracking : [],
       loading: isLoading(stateProps.trackerState) && !isTesting,
       onBack: stateProps.profileIsRoot ? null : dispatchProps.onBack,
-      onFollow: username => dispatchProps.onFollow(stateProps.username),
-      onUnfollow: username => dispatchProps.onUnfollow(stateProps.username),
-      onAcceptProofs: username => dispatchProps.onFollow(stateProps.username),
+      onFollow: () => dispatchProps.onFollow(username),
+      onUnfollow: () => dispatchProps.onUnfollow(username),
+      onAcceptProofs: () => dispatchProps.onFollow(username),
       showComingSoon: !flags.tabProfileEnabled,
       onClickAvatar: () => dispatchProps.onClickAvatar(username, uid),
       onClickFollowers: () => dispatchProps.onClickFollowers(username, uid),
