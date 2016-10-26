@@ -76,7 +76,7 @@ class ProfileContainer extends PureComponent<void, EitherProps<Props>, void> {
 }
 
 export default connect(
-  (state, {routeProps, routePath}: OwnProps) => {
+  (state, {routeProps, routeState, routePath}: OwnProps) => {
     const myUsername = state.config.username
     const myUid = state.config.uid
     const username = !!routeProps.username ? routeProps.username : myUsername
@@ -88,9 +88,10 @@ export default connect(
       profileIsRoot: routePath.length === 1 && routePath[0] === profileTab,
       myUsername,
       trackerState: state.tracker.trackers[username],
+      currentFriendshipsTab: routeState.currentFriendshipsTab,
     }
   },
-  (dispatch: any, ownProps: OwnProps) => ({
+  (dispatch: any, {setRouteState}: OwnProps) => ({
     onUserClick: (username, uid) => { dispatch(onUserClick(username, uid)) },
     onBack: () => { dispatch(navigateUp()) },
     onFolderClick: folder => { dispatch(openInKBFS(folder.path)) },
@@ -110,6 +111,7 @@ export default connect(
     onClickAvatar: (username, uid) => { dispatch(onClickAvatar(username, uid)) },
     onClickFollowers: (username, uid) => { dispatch(onClickFollowers(username, uid)) },
     onClickFollowing: (username, uid) => { dispatch(onClickFollowing(username, uid)) },
+    onChangeFriendshipsTab: currentFriendshipsTab => { setRouteState({currentFriendshipsTab}) },
   }),
   (stateProps, dispatchProps, ownProps: OwnProps) => {
     const refresh = () => {
@@ -139,6 +141,7 @@ export default connect(
       isYou,
       bioEditFns,
       username: stateProps.username,
+      currentFriendshipsTab: stateProps.currentFriendshipsTab,
       refresh,
       followers: stateProps.trackerState ? stateProps.trackerState.trackers : [],
       following: stateProps.trackerState ? stateProps.trackerState.tracking : [],

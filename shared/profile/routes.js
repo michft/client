@@ -4,6 +4,7 @@ import Profile from './container'
 
 const routeTree = Routes({
   component: Profile,
+  initialState: {currentFriendshipsTab: 'Followers'},
   children: {
     profile: () => routeTree,
   },
