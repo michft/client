@@ -2,7 +2,7 @@
 import * as I from 'immutable'
 import * as Constants from '../constants/route-tree'
 import type {RouteTreeState} from '../constants/route-tree'
-import {RouteStateNode, getPath, routeSetProps, routeSetState, finalizeRouteState} from '../route-tree'
+import {RouteStateNode, getPath, routeSetProps, routeSetState, routeClear} from '../route-tree'
 
 import routeDef from '../routes'
 
@@ -33,15 +33,15 @@ function routeStateReducer(routeDef, routeState, action) {
     case Constants.navigateUp: {
       // fix for non branch? missing component?
       const path = getPath(routeState)
-      return routeSetProps(routeDef, path.slice(0, -1).concat({selected: null}), routeState)
-      //TODO: clear out props and state?
+      const newRouteState = routeSetProps(routeDef, path.slice(0, -1).concat({selected: null}), routeState)
+      return routeClear(path, newRouteState)
     }
 
     case Constants.setRouteState:
       return routeSetState(routeDef, action.payload.path, routeState, action.payload.partialState)
 
-    //TODO: clear the state/props from a subtree
-    //case Constants.clear:
+    case Constants.resetRoute:
+      return routeClear(action.payload.path, routeState)
 
     default:
       return routeState

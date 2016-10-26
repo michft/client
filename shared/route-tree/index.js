@@ -75,11 +75,18 @@ export const RouteStateNode = I.Record({
 
 function _routeSet(routeDef, path, routeState) {
   const pathHead = path && path[0]
-  const selected = path.length ? pathHead.selected : routeDef.defaultSelected
 
-  let newRouteState = routeState || RouteStateNode()
-  newRouteState = newRouteState.set('selected', selected)
+  let newRouteState
+  if (!routeState) {
+    newRouteState = RouteStateNode({selected: routeDef.defaultSelected})
+  } else {
+    newRouteState = routeState
+    if (pathHead) {
+      newRouteState = routeState.set('selected', pathHead.selected)
+    }
+  }
 
+  const selected = newRouteState.selected
   if (selected !== null) {
     let childDef = routeDef.children.get(selected)
     if (!childDef) {
@@ -89,19 +96,13 @@ function _routeSet(routeDef, path, routeState) {
       childDef = childDef()
     }
 
-    const childState = newRouteState.children.get(selected)
-    let newChild = _routeSet(childDef, path.slice(1), childState)
-
-    if (pathHead) {
-      if (pathHead.hasOwnProperty('props')) {
+    newRouteState = newRouteState.updateIn(['children', selected], childState => {
+      let newChild = _routeSet(childDef, path.slice(1), childState)
+      if (pathHead && pathHead.hasOwnProperty('props')) {
         newChild = newChild.set('props', I.fromJS(pathHead.props))
       }
-      if (pathHead.hasOwnProperty('partialState')) {
-        newChild = newChild.merge('state', pathHead.partialState)
-      }
-    }
-
-    newRouteState = newRouteState.setIn(['children', selected], newChild)
+      return newChild
+    })
   }
 
   return newRouteState
@@ -120,8 +121,21 @@ export function routeSetProps(routeDef, pathProps, routeState) {
 }
 
 export function routeSetState(routeDef, path, routeState, partialState) {
-  const statePath = path.concat({selected: null, partialState})
-  return _routeSet(routeDef, statePath, routeState)
+  if (!path.length) {
+    return routeState.update('state', state => state.merge(partialState))
+  }
+  return routeState.updateIn(['children', path[0]],
+    childState => routeSetState(routeDef, path.slice(1), childState, partialState)
+  )
+}
+
+export function routeClear(path, routeState) {
+  if (!path.length) {
+    return null
+  }
+  return routeState.updateIn(['children', path[0]],
+    childState => routeClear(path.slice(1), childState)
+  )
 }
 
 export function getPath(routeState: RouteTreeNode<*,*>) {
