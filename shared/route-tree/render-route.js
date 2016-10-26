@@ -82,6 +82,8 @@ function _RenderRoute({routeDef, routeState, setRouteState, path}): React$Elemen
   }
 }
 
-export default function RenderRoute(props): React$Element {
-  return _RenderRoute(props).component
+export default class RenderRoute extends PureComponent {
+  render() {
+    return _RenderRoute(this.props).component
+  }
 }
