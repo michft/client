@@ -2,43 +2,56 @@
 import * as I from 'immutable'
 import * as Constants from '../constants/route-tree'
 import type {RouteTreeState} from '../constants/route-tree'
-import {RouteNode, getPath, routeSetProps, routeSetState} from '../route-tree'
+import {RouteStateNode, getPath, routeSetProps, routeSetState, finalizeRouteState} from '../route-tree'
 
-import routeTree from '../routes'
+import routeDef from '../routes'
+
+const StateRecord = I.Record({
+  routeDef: null,
+  routeState: null,
+})
 
 // TODO: use setRoutes action instead of static assignment
-const initialState = RouteStateNode(routeTree.initialSelected)
+const initialState = StateRecord({
+  routeDef,
+  routeState: routeSetProps(routeDef, ['tabs:devicesTab']),
+})
 
-export default function routeTreeReducer (state: RouteTreeState = initialState, action: any): RouteTreeState {
+function routeStateReducer(routeDef, routeState, action) {
   switch (action.type) {
-    // TODO: set routes (for init and HMR)
-    //case Constants.setRoutes:
-
     case Constants.switchTo:
-      return routeSetProps(action.payload.path, state)
+      return routeSetProps(routeDef, action.payload.path, routeState)
 
     case Constants.navigateTo:
-      return routeSetProps(action.payload.path.concat({selected: true}), state)
+      return routeSetProps(routeDef, action.payload.path.concat({selected: null}), routeState)
 
     case Constants.navigateAppend: {
-      const path = getPath(state)
-      return routeSetProps(path.concat(...action.payload.path), state)
+      const path = getPath(routeState)
+      return routeSetProps(routeDef, path.concat(...action.payload.path), routeState)
     }
 
     case Constants.navigateUp: {
       // fix for non branch? missing component?
-      const path = getPath(state)
-      return routeSetProps(path.slice(0, -1).concat({selected: true}), state)
+      const path = getPath(routeState)
+      return routeSetProps(routeDef, path.slice(0, -1).concat({selected: null}), routeState)
       //TODO: clear out props and state?
     }
 
     case Constants.setRouteState:
-      return routeSetState(action.payload.path, state, action.payload.partialState)
+      return routeSetState(routeDef, action.payload.path, routeState, action.payload.partialState)
 
     //TODO: clear the state/props from a subtree
     //case Constants.clear:
 
     default:
-      return state
+      return routeState
   }
+}
+
+export default function routeTreeReducer (state: RouteTreeState = initialState, action: any): RouteTreeState {
+  let {routeDef, routeState} = state
+  return state.merge({
+    routeDef: routeDef,
+    routeState: routeStateReducer(routeDef, routeState, action),
+  })
 }

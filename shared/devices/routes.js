@@ -7,7 +7,6 @@ import DevicePage from './device-page'
 import RemoveDevice from './device-revoke'
 
 const routeTree = Routes({
-  initialSelected: true,
   component: Devices,
   initialState: { showingRevoked: false },
   children: {

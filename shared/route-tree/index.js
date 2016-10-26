@@ -1,6 +1,7 @@
 // @flow
 import * as I from 'immutable'
 
+/*
 export type RouteComponentProps<P,SP,S> = {
   routeProps: P & SP,
   routeState: S,
@@ -34,33 +35,24 @@ type RouteNodeShapeRecursive<P,S> = RouteNodeShapeBase<P,S> & {
 }
 
 type RouteNodeShape<P,S> = RouteNodeShapeSingle<P,S> | RouteNodeShapeRecursive<P,S>
+*/
 
 const routeNodeDefaults: RouteNodeShape<*,*> = {
-  selected: null,
-  recursive: false,
+  defaultSelected: null,
   component: null,
   wrapComponent: null,
   tags: I.Map(),
   staticProps: I.Map(),
   initialState: I.Map(),
-  props: I.Map(),
-  state: I.Map(),
   children: I.Map(),
 }
 
 export type RouteTreeNode<P,S> = I.Record<RouteNodeShape<P,S>>
-const _RouteNode = I.Record(routeNodeDefaults)
+const _RouteDefNode = I.Record(routeNodeDefaults)
 
-const _RouteStateNode = I.Record({
-  selected: null,
-  props: I.Map(),
-  state: I.Map(),
-})
-
-export function Routes({initialSelected, recursive, component, wrapComponent, staticProps, tags, initialState, children}) {
-  return _RouteNode({
-    selected: initialSelected || true,
-    recursive: recursive,
+export function Routes({defaultSelected, component, wrapComponent, staticProps, tags, initialState, children}) {
+  return _RouteDefNode({
+    defaultSelected: defaultSelected || null,
     component,
     wrapComponent,
     tags: I.Map(tags),
@@ -69,44 +61,53 @@ export function Routes({initialSelected, recursive, component, wrapComponent, st
     props: I.Map(),
     state: I.Map(),
     children: I.Seq(children)
-      .map(params => params instanceof _RouteNode ? params : Routes(params))
+      .map(params => params instanceof _RouteDefNode || typeof params === 'function' ? params : Routes(params))
       .toMap(),
   })
 }
 
-function _routeSet(path, routeTree) {
-  if (!path.length) {
-    return routeTree
-  }
+export const RouteStateNode = I.Record({
+  selected: null,
+  props: I.Map(),
+  state: I.Map(),
+  children: I.Map(),
+})
 
-  if (routeTree.recursive) {
-    const selectedStack = routeTree.selected === true ? I.List() : routeTree.selected
-      .mergeWith((prev, next) => {
-        let newChild = _RouteStateNode(next)
-        if (prev && !next.hasOwnProperty('props')) {
-          newChild = newChild.set('props', prev.props)
-        }
-        return newChild
-      }, I.Seq(path))
-      .takeUntil(n.selected === true)
-    return routeTree.set('selected', selectedStack.isEmpty ? true : selectedStack)
-  }
+function _routeSet(routeDef, path, routeState) {
+  const pathHead = path && path[0]
+  const selected = path.length ? pathHead.selected : routeDef.defaultSelected
 
-  let pathHead = path[0]
-  let newRouteTree = routeTree.set('selected', pathHead.selected)
+  let newRouteState = routeState || RouteStateNode()
+  newRouteState = newRouteState.set('selected', selected)
 
-  if (pathHead.selected !== true) {
-    let newChild = _routeSet(path.slice(1), routeTree.children.get(pathHead.selected))
-    if (pathHead.hasOwnProperty('props')) {
-      newChild = newChild.set('props', I.fromJS(pathHead.props))
+  if (selected !== null) {
+    let childDef = routeDef.children.get(selected)
+    if (!childDef) {
+      throw new Error(`Invalid route selected: ${selected}`)
     }
-    newRouteTree = newRouteTree.setIn(['children', pathHead.selected], newChild)
+    if (typeof childDef === 'function') {
+      childDef = childDef()
+    }
+
+    const childState = newRouteState.children.get(selected)
+    let newChild = _routeSet(childDef, path.slice(1), childState)
+
+    if (pathHead) {
+      if (pathHead.hasOwnProperty('props')) {
+        newChild = newChild.set('props', I.fromJS(pathHead.props))
+      }
+      if (pathHead.hasOwnProperty('partialState')) {
+        newChild = newChild.merge('state', pathHead.partialState)
+      }
+    }
+
+    newRouteState = newRouteState.setIn(['children', selected], newChild)
   }
 
-  return newRouteTree
+  return newRouteState
 }
 
-export function routeSetProps(pathProps, routeTree) {
+export function routeSetProps(routeDef, pathProps, routeState) {
   const path = pathProps.map(item => {
     if (typeof item === 'string') {
       return {selected: item}
@@ -115,33 +116,18 @@ export function routeSetProps(pathProps, routeTree) {
       return {selected, props}
     }
   })
-  return _routeSet(path, routeTree)
+  return _routeSet(routeDef, path, routeState)
 }
 
-export function routeSetState(path, routeTree, partialState) {
-  let pathHead = path[0]
-  if (routeTree.recursive) {
-    // TODO: check invalid path
-    const newSelected = routeTree.get('selected').merge(path.length - 1, partialState)
-    return routeTree.set('selected', newSelected)
-  } else {
-    if (path.length) {
-      const newChild = routeSetState(path.slice(1), routeTree.children.get(pathHead), partialState)
-      return routeTree.set('children', routeTree.children.set(pathHead, newChild))
-    } else {
-      return routeTree.set('state', routeTree.state.merge(partialState))
-    }
-  }
+export function routeSetState(routeDef, path, routeState, partialState) {
+  const statePath = path.concat({selected: null, partialState})
+  return _routeSet(routeDef, statePath, routeState)
 }
 
-export function getPath(routeTree: RouteTreeNode<*,*>) {
+export function getPath(routeState: RouteTreeNode<*,*>) {
   const path = []
-  let curNode = routeTree
-  while (curNode.selected !== true) {
-    if (curNode.recursive) {
-      curNode.selected.forEach(n => path.push(n.selected))
-      break
-    }
+  let curNode = routeState
+  while (curNode.selected !== null) {
     path.push(curNode.selected)
     curNode = curNode.children.get(curNode.selected)
   }

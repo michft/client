@@ -1,51 +1,61 @@
 import React from 'react'
 
-function renderRouteNode(RouteComponent, routeTree, routeData, path, setRouteState, leafTags, child) {
-  if (!RouteComponent) {
-    throw new Error(`Route missing component: ${path.join('/')}`)
-  }
-  return <RouteComponent
-    routeProps={routeTree.staticProps.merge(routeData.props).toJS()}
-    routeState={routeTree.initialState.merge(routeData.state).toJS()}
-    routeSelected={routeTree.selected}  // FIXME: accurate for recursive routes?
-    routePath={path}
-    routeLeafTags={leafTags && leafTags.toJS()}
-    setRouteState={partialState => setRouteState(path, partialState)}
-  >{child}</RouteComponent>
+function pathToString(path) {
+  return path.join('/') || '/'
 }
 
-function _RenderRoute({routeTree, setRouteState, path}): React$Element {
-  path = path || []
-  if (!routeTree) {
-    throw new Error(`Undefined route: ${path.join('/')}`)
+function renderRouteNode(RouteComponent, routeDef, routeState, path, setRouteState, leafTags, child) {
+  if (!RouteComponent) {
+    throw new Error(`Route missing component: ${pathToString(path)}`)
   }
-  if (routeTree.selected === true) {
+
+  return (
+    <RouteComponent
+      routeProps={routeDef.staticProps.merge(routeState.props).toJS()}
+      routeState={routeDef.initialState.merge(routeState.state).toJS()}
+      routeSelected={routeState.selected}
+      routePath={path}
+      routeLeafTags={leafTags && leafTags.toJS()}
+      setRouteState={partialState => setRouteState(path, partialState)}
+    >{child}</RouteComponent>
+  )
+}
+
+function _RenderRoute({routeDef, routeState, setRouteState, path}): React$Element {
+  path = path || []
+
+  if (!routeDef) {
+    throw new Error(`Undefined route: ${pathToString(path)}`)
+  } else if (!routeState) {
+    throw new Error(`Missing route state: ${pathToString(path)}`)
+  }
+
+  const selected = routeState.selected
+  if (selected === null) {
     return {
-      component: renderRouteNode(routeTree.component, routeTree, routeTree, path, setRouteState),
-      leafTags: routeTree.tags,
-    }
-  } else if (routeTree.recursive) {
-    const lastRoute = routeTree.selected.last()
-    const lastRouteChild = routeTree.children.get(lastRoute.selected)
-    const lastComponent = lastRouteChild.component
-    const recursivePath = path.concat(routeTree.selected.map(n => n.selected).toArray())
-    return {
-      component: renderRouteNode(lastComponent, routeTree, lastRoute, path, setRouteState),
-      leafTags: lastRouteChild.tags,
+      component: renderRouteNode(routeDef.component, routeDef, routeState, path, setRouteState),
+      leafTags: routeDef.tags,
     }
   } else {
-    const childNode = routeTree.children.get(routeTree.selected)
-    const childPath = path.concat(routeTree.selected)
-    const childRender = _RenderRoute({routeTree: childNode, setRouteState, path: childPath})
+    let childDef = routeDef.children.get(selected)
+    if (typeof childDef === 'function') {
+      childDef = childDef()
+    }
+    const childState = routeState.children.get(selected)
+    const childPath = path.concat(selected)
+    const childRender = _RenderRoute({routeDef: childDef, routeState: childState, path: childPath, setRouteState})
+
+    const nextComponent = routeDef.wrapComponent
+      ? renderRouteNode(routeDef.wrapComponent, childDef, childState, path, setRouteState, childRender.leafTags, childRender.component)
+      : childRender.component
+
     return {
-      component: !routeTree.wrapComponent
-        ? childRender.component
-        : renderRouteNode(routeTree.wrapComponent, routeTree, routeTree, path, setRouteState, childRender.leafTags, childRender.component),
+      component: nextComponent,
       leafTags: childRender.leafTags,
     }
   }
 }
 
-export default function RenderRoute({routeTree, setRouteState, path}): React$Element {
-  return _RenderRoute({routeTree, setRouteState, path}).component
+export default function RenderRoute(props): React$Element {
+  return _RenderRoute(props).component
 }

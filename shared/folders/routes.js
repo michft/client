@@ -16,7 +16,7 @@ const filesSubTree = {
 }
 
 const routeTree = Routes({
-  initialSelected: 'private',
+  defaultSelected: 'private',
   children: {
     private: {
       component: Folders,

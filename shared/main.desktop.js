@@ -101,7 +101,7 @@ class Main extends Component<void, Props, void> {
       ipcRenderer.send(this.props.menuBadge ? 'showTrayRegular' : 'showTrayBadged')
     }
 
-    return !this.props.routeTree.equals(nextProps.routeTree)
+    return !this.props.routeState.equals(nextProps.routeState) || !this.props.routeDef.equals(nextProps.routeDef)
   }
 
   componentDidMount () {
@@ -118,7 +118,13 @@ class Main extends Component<void, Props, void> {
   }
 
   render () {
-    return <RenderRoute routeTree={this.props.routeTree} setRouteState={this.props.setRouteState} />
+    return (
+      <RenderRoute
+        routeDef={this.props.routeDef}
+        routeState={this.props.routeState}
+        setRouteState={this.props.setRouteState}
+      />
+    )
   }
 }
 
@@ -131,11 +137,12 @@ const stylesTabsContainer = {
 // $FlowIssue type this connector
 export default connect(
   ({
-    routeTree,
+    routeTree: {routeDef, routeState},
     config: {extendedConfig, username},
     favorite: {publicBadge = 0, privateBadge = 0},
     notifications: {menuBadge}}) => ({
-      routeTree,
+      routeDef,
+      routeState,
       provisioned: extendedConfig && !!extendedConfig.defaultDeviceID,
       username,
       menuBadge,

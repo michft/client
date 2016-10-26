@@ -17,7 +17,7 @@ import {
 } from './constants/tabs'
 
 const routeTree = Routes({
-  initialSelected: devicesTab,
+  defaultSelected: devicesTab,
   wrapComponent: Nav,
   children: {
     [folderTab]: foldersRoutes,
