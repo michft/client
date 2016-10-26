@@ -6,7 +6,7 @@ function pathToString(path) {
 
 class RenderRouteNode extends PureComponent {
   render() {
-    const {wrap, routeDef, routeState, path, leafTags, partialState, children} = this.props
+    const {wrap, routeDef, routeState, setRouteState, path, leafTags, partialState, children} = this.props
 
     const RouteComponent = wrap ? routeDef.wrapComponent : routeDef.component
     if (!RouteComponent) {
