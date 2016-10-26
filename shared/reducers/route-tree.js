@@ -31,7 +31,6 @@ function routeStateReducer(routeDef, routeState, action) {
     }
 
     case Constants.navigateUp: {
-      // fix for non branch? missing component?
       const path = getPath(routeState)
       const newRouteState = routeSetProps(routeDef, path.slice(0, -1).concat({selected: null}), routeState)
       return routeClear(path, newRouteState)
