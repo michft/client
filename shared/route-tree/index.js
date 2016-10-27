@@ -40,12 +40,22 @@ export class Routes extends _RouteDefNode {
   }
 }
 
-export const RouteStateNode = I.Record({
+const _RouteStateNode = I.Record({
   selected: null,
   props: I.Map(),
   state: I.Map(),
   children: I.Map(),
 })
+
+export class RouteStateNode extends _RouteStateNode {
+  getChild(name) {
+    return this.children.get(name)
+  }
+
+  updateChild(name, op) {
+    return this.updateIn(['children', name], op)
+  }
+}
 
 export class InvalidRouteError extends Error {}
 
@@ -54,7 +64,7 @@ function _routeSet(routeDef, path, routeState) {
 
   let newRouteState
   if (!routeState) {
-    newRouteState = RouteStateNode({selected: routeDef.defaultSelected})
+    newRouteState = new RouteStateNode({selected: routeDef.defaultSelected})
   } else {
     newRouteState = routeState
     if (pathHead) {
@@ -69,7 +79,7 @@ function _routeSet(routeDef, path, routeState) {
       throw new InvalidRouteError(`Invalid route selected: ${selected}`)
     }
 
-    newRouteState = newRouteState.updateIn(['children', selected], childState => {
+    newRouteState = newRouteState.updateChild(selected, childState => {
       let newChild = _routeSet(childDef, path.skip(1), childState)
       if (pathHead && pathHead.hasOwnProperty('props')) {
         newChild = newChild.set('props', I.fromJS(pathHead.props))
@@ -102,7 +112,7 @@ export function routeSetState(routeDef, path, routeState, partialState) {
   if (!pathSeq.size) {
     return routeState.update('state', state => state.merge(partialState))
   }
-  return routeState.updateIn(['children', pathSeq.first()],
+  return routeState.updateChild(pathSeq.first(),
     childState => routeSetState(routeDef, pathSeq.skip(1), childState, partialState)
   )
 }
@@ -112,7 +122,7 @@ export function routeClear(path, routeState) {
   if (!pathSeq.size) {
     return null
   }
-  return routeState.updateIn(['children', pathSeq.first()],
+  return routeState.updateChild(pathSeq.first(),
     childState => routeClear(pathSeq.skip(1), childState)
   )
 }
@@ -128,7 +138,7 @@ export function checkRouteState(routeDef, routeState) {
   while (curState && curState.selected !== null) {
     path.push(curState.selected)
     curDef = curDef.getChild(curState.selected)
-    curState = curState.children.get(curState.selected)
+    curState = curState.getChild(curState.selected)
     if (!curDef) {
       return `Missing route def: ${pathToString(path)}`
     }
@@ -146,7 +156,7 @@ export function getPath(routeState) {
   let curState = routeState
   while (curState && curState.selected !== null) {
     path.push(curState.selected)
-    curState = curState.children.get(curState.selected)
+    curState = curState.getChild(curState.selected)
   }
   return I.List(path)
 }
