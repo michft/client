@@ -2,7 +2,7 @@
 import {Routes} from '../route-tree'
 import Profile from './container'
 
-const routeTree = Routes({
+const routeTree = new Routes({
   component: Profile,
   initialState: {currentFriendshipsTab: 'Followers'},
   children: {

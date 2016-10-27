@@ -16,7 +16,7 @@ import {
   settingsTab,
 } from './constants/tabs'
 
-const routeTree = Routes({
+const routeTree = new Routes({
   defaultSelected: devicesTab,
   containerComponent: Nav,
   children: {

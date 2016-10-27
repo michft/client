@@ -15,7 +15,7 @@ const filesSubTree = {
   },
 }
 
-const routeTree = Routes({
+const routeTree = new Routes({
   defaultSelected: 'private',
   children: {
     private: {

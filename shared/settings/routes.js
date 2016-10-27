@@ -20,7 +20,7 @@ import InviteGenerated from './invite-generated'
 import DevMenu from '../dev/dev-menu'
 import DumbSheet from '../dev/dumb-sheet'
 
-const routeTree = Routes({
+const routeTree = new Routes({
   defaultSelected: landingTab,
   containerComponent: Settings,
   children: {

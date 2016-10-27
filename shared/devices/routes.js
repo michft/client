@@ -6,7 +6,7 @@ import GenPaperKey from './gen-paper-key'
 import DevicePage from './device-page'
 import RemoveDevice from './device-revoke'
 
-const routeTree = Routes({
+const routeTree = new Routes({
   component: Devices,
   initialState: { showingRevoked: false },
   children: {

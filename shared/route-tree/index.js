@@ -12,19 +12,32 @@ const routeNodeDefaults = {
 
 const _RouteDefNode = I.Record(routeNodeDefaults)
 
-export function Routes({defaultSelected, component, containerComponent, tags, initialState, children}) {
-  return _RouteDefNode({
-    defaultSelected: defaultSelected || null,
-    component,
-    containerComponent,
-    tags: I.Map(tags),
-    initialState: I.Map(initialState),
-    props: I.Map(),
-    state: I.Map(),
-    children: I.Seq(children)
-      .map(params => params instanceof _RouteDefNode || typeof params === 'function' ? params : Routes(params))
-      .toMap(),
-  })
+export class Routes extends _RouteDefNode {
+  constructor({defaultSelected, component, containerComponent, tags, initialState, children}) {
+    super({
+      defaultSelected: defaultSelected || null,
+      component,
+      containerComponent,
+      tags: I.Map(tags),
+      initialState: I.Map(initialState),
+      props: I.Map(),
+      state: I.Map(),
+      children: I.Seq(children)
+        .map(params => params instanceof Routes || typeof params === 'function' ? params : new Routes(params))
+        .toMap(),
+    })
+  }
+
+  getChild(name) {
+    const childDef = this.children.get(name)
+    if (!childDef) {
+      return
+    }
+    if (typeof childDef === 'function') {
+      return childDef()
+    }
+    return childDef
+  }
 }
 
 export const RouteStateNode = I.Record({
@@ -51,12 +64,9 @@ function _routeSet(routeDef, path, routeState) {
 
   const selected = newRouteState.selected
   if (selected !== null) {
-    let childDef = routeDef.children.get(selected)
+    let childDef = routeDef.getChild(selected)
     if (!childDef) {
       throw new InvalidRouteError(`Invalid route selected: ${selected}`)
-    }
-    if (typeof childDef === 'function') {
-      childDef = childDef()
     }
 
     newRouteState = newRouteState.updateIn(['children', selected], childState => {
@@ -117,7 +127,7 @@ export function checkRouteState(routeDef, routeState) {
   let curState = routeState
   while (curState && curState.selected !== null) {
     path.push(curState.selected)
-    curDef = curDef.children.get(curState.selected)
+    curDef = curDef.getChild(curState.selected)
     curState = curState.children.get(curState.selected)
     if (!curDef) {
       return `Missing route def: ${pathToString(path)}`
