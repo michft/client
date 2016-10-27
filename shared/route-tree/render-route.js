@@ -1,19 +1,11 @@
 import * as I from 'immutable'
 import React, {PureComponent} from 'react'
-
-function pathToString(path) {
-  return path.join('/') || '/'
-}
+import {pathToString} from './'
 
 class RenderRouteNode extends PureComponent {
   render() {
-    const {wrap, routeDef, routeState, setRouteState, path, leafTags, partialState, children} = this.props
-
-    const RouteComponent = wrap ? routeDef.containerComponent : routeDef.component
-    if (!RouteComponent) {
-      throw new Error(`Route missing ${wrap ? 'wrap ': ''}component: ${pathToString(path)}`)
-    }
-
+    const {isContainer, routeDef, routeState, setRouteState, path, leafTags, partialState, children} = this.props
+    const RouteComponent = isContainer ? routeDef.containerComponent : routeDef.component
     return (
       <RouteComponent
         routeProps={routeState.props.toJS()}
@@ -38,6 +30,9 @@ function _RenderRoute({routeDef, routeState, setRouteState, path}): React$Elemen
 
   const selected = routeState.selected
   if (selected === null) {
+    if (!routeDef.component) {
+      throw new Error(`Attempt to render route without component: ${pathToString(path)}`)
+    }
     return {
       component: (
         <RenderRouteNode
@@ -64,7 +59,7 @@ function _RenderRoute({routeDef, routeState, setRouteState, path}): React$Elemen
     } else {
       nextComponent = (
         <RenderRouteNode
-          wrap={true}
+          isContainer={true}
           routeDef={routeDef}
           routeState={routeState}
           path={path}

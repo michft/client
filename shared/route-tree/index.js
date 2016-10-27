@@ -107,12 +107,40 @@ export function routeClear(path, routeState) {
   )
 }
 
+export function checkRouteState(routeDef, routeState) {
+  if (!routeDef) {
+    return
+  }
+
+  const path = []
+  let curDef = routeDef
+  let curState = routeState
+  while (curState && curState.selected !== null) {
+    path.push(curState.selected)
+    curDef = curDef.children.get(curState.selected)
+    curState = curState.children.get(curState.selected)
+    if (!curDef) {
+      return `Missing route def: ${pathToString(path)}`
+    }
+  }
+  if (!curState) {
+    return `Route missing state: ${pathToString(path)}`
+  }
+  if (!curDef.component) {
+    return `Route missing component: ${pathToString(path)}`
+  }
+}
+
 export function getPath(routeState) {
   const path = []
-  let curNode = routeState
-  while (curNode && curNode.selected !== null) {
-    path.push(curNode.selected)
-    curNode = curNode.children.get(curNode.selected)
+  let curState = routeState
+  while (curState && curState.selected !== null) {
+    path.push(curState.selected)
+    curState = curState.children.get(curState.selected)
   }
   return I.List(path)
+}
+
+export function pathToString(path) {
+  return '/' + path.join('/')
 }

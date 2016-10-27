@@ -61,9 +61,9 @@ export function setRouteState (path: Array<string>, partialState: any): Action {
 }
 
 // Reset the props and state for a subtree.
-export function clear (path: Array<string>): Action {
+export function resetRoute (path: Array<string>): Action {
   return {
-    type: Constants.clear,
+    type: Constants.resetRoute,
     payload: {path},
   }
 }

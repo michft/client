@@ -8,7 +8,8 @@ import {
   routeSetProps,
   routeNavigate,
   routeSetState,
-  routeClear
+  routeClear,
+  checkRouteState,
 } from '../route-tree'
 
 const StateRecord = I.Record({
@@ -74,8 +75,18 @@ function routeStateReducer(routeDef, routeState, action) {
 
 export default function routeTreeReducer (state: RouteTreeState = initialState, action: any): RouteTreeState {
   let {routeDef, routeState} = state
+
+  const newRouteDef = routeDefReducer(routeDef, action)
+  const newRouteState = routeStateReducer(routeDef, routeState, action)
+
+  const routeError = checkRouteState(newRouteDef, newRouteState)
+  if (routeError) {
+    console.error(`Attempt to perform ${action.type} would result in invalid routeTree state: "${routeError}". Aborting.`)
+    return state
+  }
+
   return state.merge({
-    routeDef: routeDefReducer(routeDef, action),
-    routeState: routeStateReducer(routeDef, routeState, action),
+    routeDef: newRouteDef,
+    routeState: newRouteState,
   })
 }

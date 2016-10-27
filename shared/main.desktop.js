@@ -22,7 +22,7 @@ import type {Tabs} from './constants/tabs'
 import GlobalError from './global-errors/container'
 
 import {profileTab, folderTab, chatTab, peopleTab, devicesTab, settingsTab, loginTab} from './constants/tabs'
-import {navigateBack, navigateUp, setRouteState} from './actions/route-tree'
+import {navigateBack, navigateUp, resetRoute, setRouteState} from './actions/route-tree'
 import TabBar from './tab-bar/index.render'
 
 import type {RouteNodeRecord} from './route-tree'
