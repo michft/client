@@ -1,43 +1,7 @@
 // @flow
 import * as I from 'immutable'
 
-/*
-export type RouteComponentProps<P,SP,S> = {
-  routeProps: P & SP,
-  routeState: S,
-  routeSelected: string,
-  routePath: Array<string>,
-  routeLeafTags: ?any,
-  setRouteState: (partialState: $Shape<S>) => void,
-}
-
-type RouteState<P,S> = {
-  selected: string | true,  // TODO: way to type check valid name of child? $Keys
-  props: P,
-  state: S,
-}
-
-type RouteNodeShapeBase<P,S> = {
-  component: ?ReactClass<RouteComponentProps<P,S>>,
-  tags: I.Map<string, any>,
-  staticProps: P,
-  initialState: S,
-  children: I.Map<string, RouteNodeRecord<*,*>>,
-}
-
-type RouteNodeShapeSingle<P,S> = RouteNodeShapeBase<P,S> & RouteState<P,S> & {
-  wrapComponent: ?ReactClass<RouteComponentProps<P,S>>,
-}
-
-type RouteNodeShapeRecursive<P,S> = RouteNodeShapeBase<P,S> & {
-  recursive: true,
-  selected: I.List<RouteState>,
-}
-
-type RouteNodeShape<P,S> = RouteNodeShapeSingle<P,S> | RouteNodeShapeRecursive<P,S>
-*/
-
-const routeNodeDefaults: RouteNodeShape<*,*> = {
+const routeNodeDefaults = {
   defaultSelected: null,
   component: null,
   wrapComponent: null,
@@ -47,7 +11,6 @@ const routeNodeDefaults: RouteNodeShape<*,*> = {
   children: I.Map(),
 }
 
-export type RouteTreeNode<P,S> = I.Record<RouteNodeShape<P,S>>
 const _RouteDefNode = I.Record(routeNodeDefaults)
 
 export function Routes({defaultSelected, component, wrapComponent, staticProps, tags, initialState, children}) {
@@ -144,7 +107,7 @@ export function routeClear(path, routeState) {
   )
 }
 
-export function getPath(routeState: RouteTreeNode<*,*>) {
+export function getPath(routeState) {
   const path = []
   let curNode = routeState
   while (curNode && curNode.selected !== null) {
