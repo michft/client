@@ -6,20 +6,18 @@ const routeNodeDefaults = {
   component: null,
   containerComponent: null,
   tags: I.Map(),
-  staticProps: I.Map(),
   initialState: I.Map(),
   children: I.Map(),
 }
 
 const _RouteDefNode = I.Record(routeNodeDefaults)
 
-export function Routes({defaultSelected, component, containerComponent, staticProps, tags, initialState, children}) {
+export function Routes({defaultSelected, component, containerComponent, tags, initialState, children}) {
   return _RouteDefNode({
     defaultSelected: defaultSelected || null,
     component,
     containerComponent,
     tags: I.Map(tags),
-    staticProps: I.Map(staticProps),  // TODO: fromJS? due to deep props?
     initialState: I.Map(initialState),
     props: I.Map(),
     state: I.Map(),

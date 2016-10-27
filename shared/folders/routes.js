@@ -1,6 +1,6 @@
 // @flow
 import {Routes} from '../route-tree'
-import Folders from './'
+import {PrivateFolders, PublicFolders} from './'
 import Files from './files'
 import PaperKey from './files/paperkey'
 
@@ -19,14 +19,12 @@ const routeTree = Routes({
   defaultSelected: 'private',
   children: {
     private: {
-      component: Folders,
-      staticProps: {showingPrivate: true},
+      component: PrivateFolders,
       initialState: {showingIgnored: false},
       children: filesSubTree,
     },
     public: {
-      component: Folders,
-      staticProps: {showingPrivate: false},
+      component: PublicFolders,
       initialState: {showingIgnored: false},
       children: filesSubTree,
     },

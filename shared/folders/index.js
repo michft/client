@@ -51,11 +51,11 @@ class Folders extends Component<void, Props, void> {
   }
 }
 
-export default connect(
-  (state: TypedState, {routeProps, routeState}) => ({
+const ConnectedFolders = connect(
+  (state: TypedState, {routeProps, routeState, showingPrivate}) => ({
     username: state.config.username,
     folderState: state.favorite ? state.favorite.folderState : null,
-    showingPrivate: !!state.favorite && routeProps.showingPrivate,
+    showingPrivate: !!state.favorite && showingPrivate,
     showingIgnored: !!state.favorite && routeState.showingIgnored,
   }),
   (dispatch: any, {routePath, routeState, setRouteState}) => ({
@@ -66,3 +66,11 @@ export default connect(
     onToggleShowIgnored: () => { setRouteState({showingIgnored: !routeState.showingIgnored}) }
   })
 )(Folders)
+
+export function PrivateFolders(props) {
+  return <ConnectedFolders showingPrivate={true} {...props} />
+}
+
+export function PublicFolders(props) {
+  return <ConnectedFolders showingPrivate={false} {...props} />
+}

@@ -16,7 +16,7 @@ class RenderRouteNode extends PureComponent {
 
     return (
       <RouteComponent
-        routeProps={routeDef.staticProps.merge(routeState.props).toJS()}
+        routeProps={routeState.props.toJS()}
         routeState={routeDef.initialState.merge(routeState.state).toJS()}
         routeSelected={routeState.selected}
         routePath={path}
