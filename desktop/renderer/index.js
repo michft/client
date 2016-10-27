@@ -14,12 +14,14 @@ import engine, {makeEngine} from '../shared/engine'
 import hello from '../shared/util/hello'
 import injectTapEventPlugin from 'react-tap-event-plugin'
 import loadPerf from '../shared/util/load-perf'
+import routeDefs from '../shared/routes'
 import {AppContainer} from 'react-hot-loader'
 import {bootstrap} from '../shared/actions/config'
 import {devEditAction} from '../shared/reducers/dev-edit'
 import {listenForNotifications} from '../shared/actions/notifications'
 import {merge} from 'lodash'
-import {reduxDevToolsEnable, devStoreChangingFunctions} from '../shared/local-debug.desktop'
+import {reduxDevToolsEnable, devStoreChangingFunctions, initTabbedRouterState} from '../shared/local-debug.desktop'
+import {setRouteDef, navigateTo} from '../shared/actions/route-tree'
 import {setupContextMenu} from '../app/menu-helper'
 // $FlowIssue
 import {setupSource} from '../shared/util/forward-logs'
@@ -108,12 +110,16 @@ function render (store, MainComponent) {
     </AppContainer>), document.getElementById('root'))
 }
 
+function setupRoutes (store) {
+  store.dispatch(setRouteDef(routeDefs))
+}
+
 function setupHMR (store) {
   if (!module || !module.hot || typeof module.hot.accept !== 'function') {
     return
   }
 
-  module.hot.accept('../shared/nav.desktop', () => {
+  module.hot.accept('../shared/main.desktop', () => {
     try {
       store.dispatch({type: updateReloading, payload: {reloading: true}})
       const NewMain = require('../shared/main.desktop').default
@@ -124,6 +130,10 @@ function setupHMR (store) {
     }
   })
 
+  module.hot.accept(['../shared/main.desktop', '../shared/routes'], () => {
+    store.dispatch(setRouteDef(require('../shared/routes').default))
+  })
+
   // $FlowIssue
   module.hot.accept('../shared/local-debug-live', () => {
     store.dispatch(updateDebugConfig(require('../shared/local-debug-live')))
@@ -132,6 +142,7 @@ function setupHMR (store) {
 
 function load () {
   const store = setupStore()
+  setupRoutes(store)
   setupApp(store)
   setupHMR(store)
   render(store, Main)

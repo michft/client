@@ -73,6 +73,8 @@ export const RouteStateNode = I.Record({
   children: I.Map(),
 })
 
+export class InvalidRouteError extends Error {}
+
 function _routeSet(routeDef, path, routeState) {
   const pathHead = path && path[0]
 
@@ -90,7 +92,7 @@ function _routeSet(routeDef, path, routeState) {
   if (selected !== null) {
     let childDef = routeDef.children.get(selected)
     if (!childDef) {
-      throw new Error(`Invalid route selected: ${selected}`)
+      throw new InvalidRouteError(`Invalid route selected: ${selected}`)
     }
     if (typeof childDef === 'function') {
       childDef = childDef()
@@ -120,6 +122,10 @@ export function routeSetProps(routeDef, pathProps, routeState) {
   return _routeSet(routeDef, path, routeState)
 }
 
+export function routeNavigate(routeDef, pathProps, routeState) {
+  return routeSetProps(routeDef, pathProps.concat({selected: null}), routeState)
+}
+
 export function routeSetState(routeDef, path, routeState, partialState) {
   if (!path.length) {
     return routeState.update('state', state => state.merge(partialState))
@@ -141,7 +147,7 @@ export function routeClear(path, routeState) {
 export function getPath(routeState: RouteTreeNode<*,*>) {
   const path = []
   let curNode = routeState
-  while (curNode.selected !== null) {
+  while (curNode && curNode.selected !== null) {
     path.push(curNode.selected)
     curNode = curNode.children.get(curNode.selected)
   }

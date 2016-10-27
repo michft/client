@@ -5,10 +5,10 @@ import {RouteNode} from '../route-tree'
 import type {Action} from '../constants/types/flux'
 
 // Set the route tree
-export function setRoutes (routeTree: typeof RouteNode): Action {
+export function setRouteDef (routeDef): Action {
   return {
-    type: Constants.setRoute,
-    payload: {routeTree},
+    type: Constants.setRouteDef,
+    payload: {routeDef},
   }
 }
 
