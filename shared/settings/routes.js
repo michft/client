@@ -22,7 +22,7 @@ import DumbSheet from '../dev/dumb-sheet'
 
 const routeTree = Routes({
   defaultSelected: landingTab,
-  wrapComponent: Settings,
+  containerComponent: Settings,
   children: {
     [landingTab]: {
       component: LandingContainer,

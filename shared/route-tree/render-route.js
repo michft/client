@@ -9,7 +9,7 @@ class RenderRouteNode extends PureComponent {
   render() {
     const {wrap, routeDef, routeState, setRouteState, path, leafTags, partialState, children} = this.props
 
-    const RouteComponent = wrap ? routeDef.wrapComponent : routeDef.component
+    const RouteComponent = wrap ? routeDef.containerComponent : routeDef.component
     if (!RouteComponent) {
       throw new Error(`Route missing ${wrap ? 'wrap ': ''}component: ${pathToString(path)}`)
     }
@@ -59,7 +59,7 @@ function _RenderRoute({routeDef, routeState, setRouteState, path}): React$Elemen
     const childRender = _RenderRoute({routeDef: childDef, routeState: childState, path: childPath, setRouteState})
 
     let nextComponent
-    if (!routeDef.wrapComponent) {
+    if (!routeDef.containerComponent) {
       nextComponent = childRender.component
     } else {
       nextComponent = (

@@ -4,7 +4,7 @@ import * as I from 'immutable'
 const routeNodeDefaults = {
   defaultSelected: null,
   component: null,
-  wrapComponent: null,
+  containerComponent: null,
   tags: I.Map(),
   staticProps: I.Map(),
   initialState: I.Map(),
@@ -13,11 +13,11 @@ const routeNodeDefaults = {
 
 const _RouteDefNode = I.Record(routeNodeDefaults)
 
-export function Routes({defaultSelected, component, wrapComponent, staticProps, tags, initialState, children}) {
+export function Routes({defaultSelected, component, containerComponent, staticProps, tags, initialState, children}) {
   return _RouteDefNode({
     defaultSelected: defaultSelected || null,
     component,
-    wrapComponent,
+    containerComponent,
     tags: I.Map(tags),
     staticProps: I.Map(staticProps),  // TODO: fromJS? due to deep props?
     initialState: I.Map(initialState),
