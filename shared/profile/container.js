@@ -139,7 +139,7 @@ export default connect(
       ...dispatchProps,
       isYou,
       bioEditFns,
-      username: username,
+      username,
       currentFriendshipsTab: stateProps.currentFriendshipsTab,
       refresh,
       followers: stateProps.trackerState ? stateProps.trackerState.trackers : [],
