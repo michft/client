@@ -1,3 +1,4 @@
+import * as I from 'immutable'
 import React, {PureComponent} from 'react'
 
 function pathToString(path) {
@@ -27,7 +28,7 @@ class RenderRouteNode extends PureComponent {
 }
 
 function _RenderRoute({routeDef, routeState, setRouteState, path}): React$Element {
-  path = path || []
+  path = path || I.List()
 
   if (!routeDef) {
     throw new Error(`Undefined route: ${pathToString(path)}`)
@@ -54,7 +55,7 @@ function _RenderRoute({routeDef, routeState, setRouteState, path}): React$Elemen
       childDef = childDef()
     }
     const childState = routeState.children.get(selected)
-    const childPath = path.concat(selected)
+    const childPath = path.push(selected)
     const childRender = _RenderRoute({routeDef: childDef, routeState: childState, path: childPath, setRouteState})
 
     let nextComponent

@@ -61,7 +61,7 @@ export default connect(
       ...ownProps.routeProps,
     })
   },
-  (dispatch: any, {routePath}) => {
+  (dispatch: any) => {
     return {
       ...bindActionCreators(devicesActions, dispatch),
       showRemoveDevicePage: device => dispatch(navigateAppend({selected: 'removeDevice', device})),

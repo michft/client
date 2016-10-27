@@ -85,7 +85,7 @@ export default connect(
     return {
       username,
       uid,
-      profileIsRoot: routePath.length === 1 && routePath[0] === profileTab,
+      profileIsRoot: routePath.size === 1 && routePath.first() === profileTab,
       myUsername,
       trackerState: state.tracker.trackers[username],
       currentFriendshipsTab: routeState.currentFriendshipsTab,

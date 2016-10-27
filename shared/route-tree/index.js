@@ -39,7 +39,7 @@ export const RouteStateNode = I.Record({
 export class InvalidRouteError extends Error {}
 
 function _routeSet(routeDef, path, routeState) {
-  const pathHead = path && path[0]
+  const pathHead = path && path.first()
 
   let newRouteState
   if (!routeState) {
@@ -62,7 +62,7 @@ function _routeSet(routeDef, path, routeState) {
     }
 
     newRouteState = newRouteState.updateIn(['children', selected], childState => {
-      let newChild = _routeSet(childDef, path.slice(1), childState)
+      let newChild = _routeSet(childDef, path.skip(1), childState)
       if (pathHead && pathHead.hasOwnProperty('props')) {
         newChild = newChild.set('props', I.fromJS(pathHead.props))
       }
@@ -74,7 +74,7 @@ function _routeSet(routeDef, path, routeState) {
 }
 
 export function routeSetProps(routeDef, pathProps, routeState) {
-  const path = pathProps.map(item => {
+  const pathSeq = I.Seq(pathProps).map(item => {
     if (typeof item === 'string') {
       return {selected: item}
     } else {
@@ -82,7 +82,7 @@ export function routeSetProps(routeDef, pathProps, routeState) {
       return {selected, props}
     }
   })
-  return _routeSet(routeDef, path, routeState)
+  return _routeSet(routeDef, pathSeq, routeState)
 }
 
 export function routeNavigate(routeDef, pathProps, routeState) {
@@ -90,20 +90,22 @@ export function routeNavigate(routeDef, pathProps, routeState) {
 }
 
 export function routeSetState(routeDef, path, routeState, partialState) {
-  if (!path.length) {
+  const pathSeq = I.Seq(path)
+  if (!pathSeq.size) {
     return routeState.update('state', state => state.merge(partialState))
   }
-  return routeState.updateIn(['children', path[0]],
-    childState => routeSetState(routeDef, path.slice(1), childState, partialState)
+  return routeState.updateIn(['children', pathSeq.first()],
+    childState => routeSetState(routeDef, pathSeq.skip(1), childState, partialState)
   )
 }
 
 export function routeClear(path, routeState) {
-  if (!path.length) {
+  const pathSeq = I.Seq(path)
+  if (!pathSeq.size) {
     return null
   }
-  return routeState.updateIn(['children', path[0]],
-    childState => routeClear(path.slice(1), childState)
+  return routeState.updateIn(['children', pathSeq.first()],
+    childState => routeClear(pathSeq.skip(1), childState)
   )
 }
 
@@ -114,5 +116,5 @@ export function getPath(routeState) {
     path.push(curNode.selected)
     curNode = curNode.children.get(curNode.selected)
   }
-  return path
+  return I.List(path)
 }

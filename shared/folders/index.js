@@ -62,7 +62,7 @@ export default connect(
     favoriteList: () => { dispatch(favoriteList()) },
     navigateAppend: path => { dispatch(navigateAppend({selected: 'files', path})) },
     openInKBFS: path => { dispatch(openInKBFS(path)) },
-    switchTab: showingPrivate => { dispatch(switchTo(...routePath.slice(0, -1), showingPrivate ? 'private' : 'public')) },
+    switchTab: showingPrivate => { dispatch(switchTo(...routePath.pop(), showingPrivate ? 'private' : 'public')) },
     onToggleShowIgnored: () => { setRouteState({showingIgnored: !routeState.showingIgnored}) }
   })
 )(Folders)
