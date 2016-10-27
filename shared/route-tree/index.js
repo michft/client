@@ -1,16 +1,14 @@
 // @flow
 import * as I from 'immutable'
 
-const routeNodeDefaults = {
+const _RouteDefNode = I.Record({
   defaultSelected: null,
   component: null,
   containerComponent: null,
   tags: I.Map(),
   initialState: I.Map(),
   children: I.Map(),
-}
-
-const _RouteDefNode = I.Record(routeNodeDefaults)
+})
 
 export class Routes extends _RouteDefNode {
   constructor({defaultSelected, component, containerComponent, tags, initialState, children}) {
