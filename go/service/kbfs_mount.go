@@ -26,18 +26,12 @@ func NewKBFSMountHandler(xp rpc.Transporter, g *libkb.GlobalContext) *KBFSMountH
 
 func (h *KBFSMountHandler) GetCurrentDriveLetter(ctx context.Context) (res string, err error) {
 
-	mountdir := os.Getenv("KEYBASE_DRIVE_LETTER")
-	if mountdir == "" {
-		i, err := h.G().Env.GetConfig().GetInterfaceAtPath("mountdir")
-		if err == nil {
-			mountdir = i.(string)
-		}
-	}
+	mountdir, err := h.G().Env.GetMountDir()
 	if mountdir == "" {
 		drives := getDriveLetters(true)
 		if len(drives) > 0 {
 			mountdir = drives[0]
-			h.SetCurrentDriveLetter(ctx, mountdir)
+			err = h.SetCurrentDriveLetter(ctx, mountdir)
 		}
 	}
 	return mountdir, err

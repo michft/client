@@ -1,5 +1,5 @@
 @namespace("keybase.1")
-protocol kbfs_mount {
+protocol kbfsMount {
     string GetCurrentDriveLetter();
     array<string> GetAllAvailableDriveLetters();
     void SetCurrentDriveLetter(string drive);

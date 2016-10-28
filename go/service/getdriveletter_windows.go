@@ -11,6 +11,7 @@ import (
 	"unsafe"
 )
 
+// Path is supposed to end with a backslash
 func getVolumeName(RootPathName string) (string, error) {
 	var VolumeNameBuffer = make([]uint16, syscall.MAX_PATH+1)
 	var nVolumeNameSize = uint32(len(VolumeNameBuffer))
@@ -84,7 +85,7 @@ func getDriveLetters(startAtK bool) []string {
 		if isCdRom(path) {
 			continue
 		}
-		volume, _ := getVolumeName(path)
+		volume, _ := getVolumeName(path + "\\")
 		// sanity check that it isn't keybase already
 		// Assume that no volume name means we can use it,
 		// including errors retrieving same.

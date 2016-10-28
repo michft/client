@@ -206,9 +206,15 @@ func (e *Env) GetUpdaterConfig() UpdaterConfigReader {
 func (e *Env) GetMountDir() (string, error) {
 	runMode := e.GetRunMode()
 	if runtime.GOOS == "windows" {
-		return "", fmt.Errorf("GetMountDir() is deprecated. Use service drive letter methods")
+		if runMode != ProductionRunMode {
+			return "", fmt.Errorf("KBFS is currently only supported in production mode on Windows")
+		}
+		return e.GetString(
+			func() string { return e.cmd.GetMountDir() },
+			func() string { return os.Getenv("KEYBASE_DRIVE_LETTER") },
+			func() string { return e.config.GetMountDir() },
+		), nil
 	}
-
 	switch runMode {
 	case DevelRunMode:
 		return "/keybase.devel", nil
