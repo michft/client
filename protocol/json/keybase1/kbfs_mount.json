@@ -1,5 +1,5 @@
 {
-  "protocol": "kbfs_mount",
+  "protocol": "kbfsMount",
   "imports": [],
   "types": [],
   "messages": {
