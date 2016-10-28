@@ -5,7 +5,6 @@ package service
 
 import (
 	"golang.org/x/net/context"
-	"os"
 
 	"github.com/keybase/client/go/libkb"
 	//	keybase1 "github.com/keybase/client/go/protocol/keybase1"

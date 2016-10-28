@@ -232,12 +232,12 @@ func GetKBFSClient(g *libkb.GlobalContext) (cli keybase1.KbfsClient, err error) 
 	return cli, nil
 }
 
-func GetKBFSMountClient(g *libkb.GlobalContext) (cli keybase1.Kbfs_mountClient, err error) {
+func GetKBFSMountClient(g *libkb.GlobalContext) (cli keybase1.KbfsMountClient, err error) {
 	rcli, _, err := GetRPCClientWithContext(g)
 	if err != nil {
 		return cli, err
 	}
-	cli = keybase1.Kbfs_mountClient{Cli: rcli}
+	cli = keybase1.KbfsMountClient{Cli: rcli}
 	return cli, nil
 }
 
