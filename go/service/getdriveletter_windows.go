@@ -75,6 +75,7 @@ func isCdRom(path string) bool {
 }
 
 func getDriveLetters(startAtK bool) []string {
+	//start with drive D
 	i := uint(3)
 	var drives []string
 	if startAtK {
@@ -82,6 +83,8 @@ func getDriveLetters(startAtK bool) []string {
 	}
 	for ; i < 26; i++ {
 		path := string(byte('A')+byte(i)) + ":"
+		// avoid calling GetVolumeInformation() on drives that appear to be cdroms,
+		// since they may need to spin up or prompt to have media inserted.
 		if isCdRom(path) {
 			continue
 		}
