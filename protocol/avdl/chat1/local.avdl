@@ -212,6 +212,13 @@ protocol local {
     array<RateLimit> rateLimits;
   }
 
+  @typedef("bytes") record OutboxID {}
+  record PostLocalNonblockRes {
+    array<RateLimit> rateLimits;
+    OutboxID outboxID;
+  }
+  PostLocalNonblockRes postLocalNonblock(ConversationID conversationID, string tlfName, bool tlfPublic);
+
   SetConversationStatusLocalRes SetConversationStatusLocal(ConversationID conversationID, ConversationStatus status);
   record SetConversationStatusLocalRes {
     array<RateLimit> rateLimits;

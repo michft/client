@@ -207,6 +207,18 @@ export function localPostAttachmentLocalRpcPromise (request: $Exact<requestCommo
   return new Promise((resolve, reject) => { localPostAttachmentLocalRpc({...request, callback: (error, result) => { if (error) { reject(error) } else { resolve(result) } }}) })
 }
 
+export function localPostLocalNonblockRpc (request: Exact<requestCommon & {callback?: ?(err: ?any, response: localPostLocalNonblockResult) => void} & {param: localPostLocalNonblockRpcParam}>) {
+  engineRpcOutgoing({...request, method: 'local.postLocalNonblock'})
+}
+
+export function localPostLocalNonblockRpcChannelMap (channelConfig: ChannelConfig<*>, request: $Exact<requestCommon & {callback?: ?(err: ?any, response: localPostLocalNonblockResult) => void} & {param: localPostLocalNonblockRpcParam}>): ChannelMap<*> {
+  return _channelMapRpcHelper(channelConfig, (incomingCallMap, callback) => localPostLocalNonblockRpc({...request, incomingCallMap, callback}))
+}
+
+export function localPostLocalNonblockRpcPromise (request: $Exact<requestCommon & {callback?: ?(err: ?any, response: localPostLocalNonblockResult) => void} & {param: localPostLocalNonblockRpcParam}>): Promise<localPostLocalNonblockResult> {
+  return new Promise((resolve, reject) => { localPostLocalNonblockRpc({...request, callback: (error, result) => { if (error) { reject(error) } else { resolve(result) } }}) })
+}
+
 export function localPostLocalRpc (request: Exact<requestCommon & {callback?: ?(err: ?any, response: localPostLocalResult) => void} & {param: localPostLocalRpcParam}>) {
   engineRpcOutgoing({...request, method: 'local.postLocal'})
 }
@@ -739,11 +751,18 @@ export type NotifyChatNewChatActivityRpcParam = Exact<{
   activity: ChatActivity
 }>
 
+export type OutboxID = bytes
+
 export type Pagination = {
   next: bytes,
   previous: bytes,
   num: int,
   last: boolean,
+}
+
+export type PostLocalNonblockRes = {
+  rateLimits?: ?Array<RateLimit>,
+  outboxID: OutboxID,
 }
 
 export type PostLocalRes = {
@@ -878,6 +897,12 @@ export type localPostAttachmentLocalRpcParam = Exact<{
   preview?: ?LocalSource
 }>
 
+export type localPostLocalNonblockRpcParam = Exact<{
+  conversationID: ConversationID,
+  tlfName: string,
+  tlfPublic: bool
+}>
+
 export type localPostLocalRpcParam = Exact<{
   conversationID: ConversationID,
   msg: MessagePlaintext
@@ -959,6 +984,8 @@ type localNewConversationLocalResult = NewConversationLocalRes
 
 type localPostAttachmentLocalResult = PostLocalRes
 
+type localPostLocalNonblockResult = PostLocalNonblockRes
+
 type localPostLocalResult = PostLocalRes
 
 type localSetConversationStatusLocalResult = SetConversationStatusLocalRes
@@ -993,6 +1020,7 @@ export type rpc =
   | localGetThreadLocalRpc
   | localNewConversationLocalRpc
   | localPostAttachmentLocalRpc
+  | localPostLocalNonblockRpc
   | localPostLocalRpc
   | localSetConversationStatusLocalRpc
   | remoteGetInboxRemoteRpc

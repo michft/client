@@ -694,6 +694,29 @@
     },
     {
       "type": "record",
+      "name": "OutboxID",
+      "fields": [],
+      "typedef": "bytes"
+    },
+    {
+      "type": "record",
+      "name": "PostLocalNonblockRes",
+      "fields": [
+        {
+          "type": {
+            "type": "array",
+            "items": "RateLimit"
+          },
+          "name": "rateLimits"
+        },
+        {
+          "type": "OutboxID",
+          "name": "outboxID"
+        }
+      ]
+    },
+    {
+      "type": "record",
       "name": "SetConversationStatusLocalRes",
       "fields": [
         {
@@ -958,6 +981,23 @@
         }
       ],
       "response": "PostLocalRes"
+    },
+    "postLocalNonblock": {
+      "request": [
+        {
+          "name": "conversationID",
+          "type": "ConversationID"
+        },
+        {
+          "name": "tlfName",
+          "type": "string"
+        },
+        {
+          "name": "tlfPublic",
+          "type": "bool"
+        }
+      ],
+      "response": "PostLocalNonblockRes"
     },
     "SetConversationStatusLocal": {
       "request": [
