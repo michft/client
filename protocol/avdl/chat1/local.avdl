@@ -217,7 +217,7 @@ protocol local {
     array<RateLimit> rateLimits;
     OutboxID outboxID;
   }
-  PostLocalNonblockRes postLocalNonblock(ConversationID conversationID, string tlfName, bool tlfPublic);
+  PostLocalNonblockRes postLocalNonblock(ConversationID conversationID, MessagePlaintext msg);
 
   SetConversationStatusLocalRes SetConversationStatusLocal(ConversationID conversationID, ConversationStatus status);
   record SetConversationStatusLocalRes {

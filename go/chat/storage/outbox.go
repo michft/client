@@ -1,15 +1,11 @@
 package storage
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/keybase/client/go/libkb"
 	"github.com/keybase/client/go/protocol/chat1"
-	"github.com/keybase/client/go/protocol/gregor1"
 )
-
-type OutboxID []byte
 
 type Outbox struct {
 	sync.Mutex
@@ -17,8 +13,9 @@ type Outbox struct {
 }
 
 type OutboxRecord struct {
-	Msg      chat1.MessageBoxed `codec:"M"`
-	OutboxID chat1.OutboxID     `codec:"O"`
+	ConvID   chat1.ConversationID `codec:"C"`
+	OutboxID chat1.OutboxID       `codec:"O"`
+	Msg      chat1.MessageBoxed   `codec:"M"`
 }
 
 func NewOutbox(g *libkb.GlobalContext) *Outbox {
@@ -27,15 +24,15 @@ func NewOutbox(g *libkb.GlobalContext) *Outbox {
 	}
 }
 
-func (o *Outbox) dbKey(uid gregor1.UID, convID chat1.ConversationID) libkb.DbKey {
+func (o *Outbox) dbKey() libkb.DbKey {
 	return libkb.DbKey{
 		Typ: libkb.DBChatOutbox,
-		Key: fmt.Sprintf("ob:%s:%s", uid, convID),
+		Key: "ob",
 	}
 }
 
-func (o *Outbox) readBox(uid gregor1.UID, convID chat1.ConversationID) ([]OutboxRecord, error) {
-	key := o.dbKey(uid, convID)
+func (o *Outbox) readBox() ([]OutboxRecord, error) {
+	key := o.dbKey()
 	b, found, err := o.G().LocalChatDb.GetRaw(key)
 	if err != nil {
 		return nil, err
@@ -52,8 +49,8 @@ func (o *Outbox) readBox(uid gregor1.UID, convID chat1.ConversationID) ([]Outbox
 	return res, nil
 }
 
-func (o *Outbox) writeBox(uid gregor1.UID, convID chat1.ConversationID, outbox []OutboxRecord) error {
-	key := o.dbKey(uid, convID)
+func (o *Outbox) writeBox(outbox []OutboxRecord) error {
+	key := o.dbKey()
 
 	dat, err := encode(outbox)
 	if err != nil {
@@ -67,12 +64,12 @@ func (o *Outbox) writeBox(uid gregor1.UID, convID chat1.ConversationID, outbox [
 	return nil
 }
 
-func (o *Outbox) Push(uid gregor1.UID, convID chat1.ConversationID, msg chat1.MessageBoxed) (chat1.OutboxID, libkb.ChatStorageError) {
+func (o *Outbox) Push(convID chat1.ConversationID, msg chat1.MessageBoxed) (chat1.OutboxID, libkb.ChatStorageError) {
 	o.Lock()
 	defer o.Unlock()
 
 	// Read outbox for the user
-	obox, err := o.readBox(uid, convID)
+	obox, err := o.readBox()
 	if err != nil {
 		return nil, libkb.NewChatStorageInternalError(o.G(), "error reading outbox: err: %s", err.Error())
 	}
@@ -87,23 +84,24 @@ func (o *Outbox) Push(uid gregor1.UID, convID chat1.ConversationID, msg chat1.Me
 	// Append record
 	obox = append(obox, OutboxRecord{
 		Msg:      msg,
+		ConvID:   convID,
 		OutboxID: outboxID,
 	})
 
 	// Write out box
-	if err := o.writeBox(uid, convID, obox); err != nil {
+	if err := o.writeBox(obox); err != nil {
 		return nil, libkb.NewChatStorageInternalError(o.G(), "error writing outbox: err: %s", err.Error())
 	}
 
 	return outboxID, nil
 }
 
-func (o *Outbox) Pull(uid gregor1.UID, convID chat1.ConversationID) ([]OutboxRecord, error) {
+func (o *Outbox) Pull() ([]OutboxRecord, error) {
 	o.Lock()
 	defer o.Unlock()
 
 	// Read outbox for the user
-	obox, err := o.readBox(uid, convID)
+	obox, err := o.readBox()
 	if err != nil {
 		return nil, libkb.NewChatStorageInternalError(o.G(), "error reading outbox: err: %s", err.Error())
 	}
@@ -111,12 +109,12 @@ func (o *Outbox) Pull(uid gregor1.UID, convID chat1.ConversationID) ([]OutboxRec
 	return obox, nil
 }
 
-func (o *Outbox) PopN(uid gregor1.UID, convID chat1.ConversationID, n int) error {
+func (o *Outbox) PopN(n int) error {
 	o.Lock()
 	defer o.Unlock()
 
 	// Read outbox for the user
-	obox, err := o.readBox(uid, convID)
+	obox, err := o.readBox()
 	if err != nil {
 		return libkb.NewChatStorageInternalError(o.G(), "error reading outbox: err: %s", err.Error())
 	}
@@ -125,7 +123,7 @@ func (o *Outbox) PopN(uid gregor1.UID, convID chat1.ConversationID, n int) error
 	obox = obox[n:]
 
 	// Write out box
-	if err := o.writeBox(uid, convID, obox); err != nil {
+	if err := o.writeBox(obox); err != nil {
 		return libkb.NewChatStorageInternalError(o.G(), "error writing outbox: err: %s", err.Error())
 	}
 

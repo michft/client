@@ -989,12 +989,8 @@
           "type": "ConversationID"
         },
         {
-          "name": "tlfName",
-          "type": "string"
-        },
-        {
-          "name": "tlfPublic",
-          "type": "bool"
+          "name": "msg",
+          "type": "MessagePlaintext"
         }
       ],
       "response": "PostLocalNonblockRes"

@@ -34,6 +34,10 @@ type chatLocalHandler struct {
 	udc   *utils.UserDeviceCache
 	boxer *chat.Boxer
 
+	// Senders
+	cachingSender     chat.Sender
+	nonblockingSender chat.Sender
+
 	// Only for testing
 	rc chat1.RemoteInterface
 }
@@ -54,6 +58,11 @@ func newChatLocalHandler(xp rpc.Transporter, g *libkb.GlobalContext, gh *gregorH
 		g.ConvSource = chat.NewConversationSource(g, g.Env.GetConvSourceType(), h.boxer,
 			storage.New(g, h.getSecretUI), h.remoteClient())
 	}
+
+	// Create senders
+	h.cachingSender = chat.NewCachingSender(g, h.remoteClient)
+	h.nonblockingSender = chat.NewNonblockingSender(g, h.cachingSender)
+
 	return h
 }
 
@@ -784,25 +793,39 @@ func (h *chatLocalHandler) PostLocal(ctx context.Context, arg chat1.PostLocalArg
 		return chat1.PostLocalRes{}, err
 	}
 
-	// Post to remote gregord
-	rarg := chat1.PostRemoteArg{
-		ConversationID: arg.ConversationID,
-		MessageBoxed:   *boxed,
-	}
-	plres, err := h.remoteClient().PostRemote(ctx, rarg)
-	if err != nil {
+	// Post to remote
+	var rl *chat1.RateLimit
+	if _, rl, err = h.cachingSender.Send(ctx, arg.ConversationID, *boxed); err != nil {
+		h.G().Log.Debug("PostLocal: failed to write message to cache: %s", err.Error())
 		return chat1.PostLocalRes{}, err
 	}
 
-	// Write new message out to cache
-	rboxed := *boxed
-	rboxed.ServerHeader = &plres.MsgHeader
-	if _, err := h.G().ConvSource.Push(ctx, arg.ConversationID, boxed.ClientHeader.Sender, rboxed); err != nil {
-		h.G().Log.Debug("PostLocal: failed to write message to cache: %s", err.Error())
+	return chat1.PostLocalRes{
+		RateLimits: utils.AggRateLimitsP([]*chat1.RateLimit{rl}),
+	}, nil
+}
+
+func (h *chatLocalHandler) PostLocalNonblock(ctx context.Context, arg chat1.PostLocalNonblockArg) (chat1.PostLocalNonblockRes, error) {
+	if err := h.assertLoggedIn(ctx); err != nil {
+		return chat1.PostLocalNonblockRes{}, err
+	}
+	// Add a bunch of stuff to the message (like prev pointers, sender info, ...)
+	boxed, err := h.prepareMessageForRemote(ctx, arg.Msg, &arg.ConversationID)
+	if err != nil {
+		return chat1.PostLocalNonblockRes{}, err
 	}
 
-	return chat1.PostLocalRes{
-		RateLimits: utils.AggRateLimitsP([]*chat1.RateLimit{plres.RateLimit}),
+	// Post to remote
+	var rl *chat1.RateLimit
+	var obid chat1.OutboxID
+	if obid, rl, err = h.nonblockingSender.Send(ctx, arg.ConversationID, *boxed); err != nil {
+		h.G().Log.Debug("PostLocal: failed to write message to cache: %s", err.Error())
+		return chat1.PostLocalNonblockRes{}, err
+	}
+
+	return chat1.PostLocalNonblockRes{
+		OutboxID:   obid,
+		RateLimits: utils.AggRateLimitsP([]*chat1.RateLimit{rl}),
 	}, nil
 }
 

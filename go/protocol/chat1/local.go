@@ -554,9 +554,8 @@ type PostLocalArg struct {
 }
 
 type PostLocalNonblockArg struct {
-	ConversationID ConversationID `codec:"conversationID" json:"conversationID"`
-	TlfName        string         `codec:"tlfName" json:"tlfName"`
-	TlfPublic      bool           `codec:"tlfPublic" json:"tlfPublic"`
+	ConversationID ConversationID   `codec:"conversationID" json:"conversationID"`
+	Msg            MessagePlaintext `codec:"msg" json:"msg"`
 }
 
 type SetConversationStatusLocalArg struct {
