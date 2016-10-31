@@ -29,10 +29,11 @@ import (
 type chatLocalHandler struct {
 	*BaseHandler
 	libkb.Contextified
-	gh    *gregorHandler
-	tlf   keybase1.TlfInterface
-	udc   *utils.UserDeviceCache
-	boxer *chat.Boxer
+	gh             *gregorHandler
+	tlf            keybase1.TlfInterface
+	udc            *utils.UserDeviceCache
+	boxer          *chat.Boxer
+	nonblockSender chat.Sender
 
 	// Only for testing
 	rc chat1.RemoteInterface
@@ -50,6 +51,7 @@ func newChatLocalHandler(xp rpc.Transporter, g *libkb.GlobalContext, gh *gregorH
 		udc:          udc,
 		boxer:        chat.NewBoxer(g, tlf, udc),
 	}
+	h.nonblockSender = chat.NewNonblockingSender(g, chat.NewCachingSender(g, h.remoteClient))
 	if gh != nil {
 		g.ConvSource = chat.NewConversationSource(g, g.Env.GetConvSourceType(), h.boxer,
 			storage.New(g, h.getSecretUI), h.remoteClient())
@@ -811,8 +813,7 @@ func (h *chatLocalHandler) PostLocal(ctx context.Context, arg chat1.PostLocalArg
 
 func (h *chatLocalHandler) PostLocalNonblock(ctx context.Context, arg chat1.PostLocalNonblockArg) (chat1.PostLocalNonblockRes, error) {
 
-	obid, rl, err := h.postLocalWithSender(ctx, arg.ConversationID, arg.Msg,
-		chat.NewNonblockingSender(h.G(), chat.NewCachingSender(h.G(), h.remoteClient)))
+	obid, rl, err := h.postLocalWithSender(ctx, arg.ConversationID, arg.Msg, h.nonblockSender)
 	if err != nil {
 		return chat1.PostLocalNonblockRes{},
 			fmt.Errorf("PostLocalNonblock: unable to send message: err: %s", err.Error())

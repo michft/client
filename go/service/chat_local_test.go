@@ -403,6 +403,7 @@ func TestChatGracefulUnboxing(t *testing.T) {
 	mustPostLocalForTest(t, ctc, users[0], created, chat1.NewMessageBodyWithText(chat1.MessageText{Body: "evil hello"}))
 
 	// make evil hello evil
+	ctc.world.Tcs[users[0].Username].G.ConvSource.Clear(created.Id, users[0].User.GetUID().ToBytes())
 	ctc.world.Msgs[created.Id.String()][0].BodyCiphertext.E[0]++
 
 	tv, err := ctc.as(t, users[0]).chatLocalHandler().GetThreadLocal(context.Background(), chat1.GetThreadLocalArg{

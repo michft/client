@@ -293,6 +293,7 @@ func (m *ChatRemoteMock) PostRemote(ctx context.Context, arg chat1.PostRemoteArg
 	}
 	conv.MaxMsgs = m.getMaxMsgs(arg.ConversationID)
 	sort.Sort(convByNewlyUpdated{mock: m})
+	res.MsgHeader = *inserted.ServerHeader
 	return
 }
 
