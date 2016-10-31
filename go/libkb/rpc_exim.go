@@ -456,6 +456,8 @@ func ImportStatusAsError(s *keybase1.Status) error {
 		return ChatAlreadyDeletedError{Msg: s.Desc}
 	case SCBadEmail:
 		return BadEmailError{Msg: s.Desc}
+	case SCChatCollision:
+		return ChatCollisionError{}
 	default:
 		ase := AppStatusError{
 			Code:   s.Code,
@@ -1421,6 +1423,14 @@ func (e ChatTLFFinalizedError) ToStatus() keybase1.Status {
 		Name:   "SC_CHAT_TLF_FINALIZED",
 		Desc:   e.Error(),
 		Fields: []keybase1.StringKVPair{kv},
+	}
+}
+
+func (e ChatCollisionError) ToStatus() keybase1.Status {
+	return keybase1.Status{
+		Code: SCChatCollision,
+		Name: "SC_CHAT_COLLISION",
+		Desc: e.Error(),
 	}
 }
 

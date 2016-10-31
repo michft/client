@@ -167,6 +167,7 @@ export const ConstantsStatusCode = {
   scchatalreadysuperseded: 2507,
   scchatalreadydeleted: 2508,
   scchattlffinalized: 2509,
+  scchatcollision: 2510,
 }
 
 export const CtlExitCode = {
@@ -3784,6 +3785,7 @@ export type StatusCode =
   | 2507 // SCChatAlreadySuperseded_2507
   | 2508 // SCChatAlreadyDeleted_2508
   | 2509 // SCChatTLFFinalized_2509
+  | 2510 // SCChatCollision_2510
 
 export type Stream = {
   fd: int,
