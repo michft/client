@@ -42,7 +42,7 @@ func (o *Outbox) readBox() ([]OutboxRecord, error) {
 	}
 
 	var res []OutboxRecord
-	if err := decode(b, res); err != nil {
+	if err := decode(b, &res); err != nil {
 		return nil, err
 	}
 
@@ -64,6 +64,15 @@ func (o *Outbox) writeBox(outbox []OutboxRecord) error {
 	return nil
 }
 
+func (o *Outbox) maybeNuke(err libkb.ChatStorageError) libkb.ChatStorageError {
+	if err.ShouldClear() {
+		if err := o.G().LocalChatDb.Delete(o.dbKey()); err != nil {
+			o.G().Log.Error("unable to clear inbox on error! err: %s", err.Error())
+		}
+	}
+	return err
+}
+
 func (o *Outbox) Push(convID chat1.ConversationID, msg chat1.MessageBoxed) (chat1.OutboxID, libkb.ChatStorageError) {
 	o.Lock()
 	defer o.Unlock()
@@ -71,14 +80,16 @@ func (o *Outbox) Push(convID chat1.ConversationID, msg chat1.MessageBoxed) (chat
 	// Read outbox for the user
 	obox, err := o.readBox()
 	if err != nil {
-		return nil, libkb.NewChatStorageInternalError(o.G(), "error reading outbox: err: %s", err.Error())
+		return nil, o.maybeNuke(libkb.NewChatStorageInternalError(o.G(),
+			"error reading outbox: err: %s", err.Error()))
 	}
 
 	// Generate new outbox ID
 	var outboxID chat1.OutboxID
 	outboxID, err = libkb.RandBytes(16)
 	if err != nil {
-		return nil, libkb.NewChatStorageInternalError(o.G(), "error getting outboxID: err: %s", err.Error())
+		return nil, o.maybeNuke(libkb.NewChatStorageInternalError(o.G(),
+			"error getting outboxID: err: %s", err.Error()))
 	}
 
 	// Append record
@@ -90,7 +101,8 @@ func (o *Outbox) Push(convID chat1.ConversationID, msg chat1.MessageBoxed) (chat
 
 	// Write out box
 	if err := o.writeBox(obox); err != nil {
-		return nil, libkb.NewChatStorageInternalError(o.G(), "error writing outbox: err: %s", err.Error())
+		return nil, o.maybeNuke(libkb.NewChatStorageInternalError(o.G(),
+			"error writing outbox: err: %s", err.Error()))
 	}
 
 	return outboxID, nil
@@ -103,7 +115,8 @@ func (o *Outbox) Pull() ([]OutboxRecord, error) {
 	// Read outbox for the user
 	obox, err := o.readBox()
 	if err != nil {
-		return nil, libkb.NewChatStorageInternalError(o.G(), "error reading outbox: err: %s", err.Error())
+		return nil, o.maybeNuke(libkb.NewChatStorageInternalError(o.G(),
+			"error reading outbox: err: %s", err.Error()))
 	}
 
 	return obox, nil
@@ -116,7 +129,8 @@ func (o *Outbox) PopN(n int) error {
 	// Read outbox for the user
 	obox, err := o.readBox()
 	if err != nil {
-		return libkb.NewChatStorageInternalError(o.G(), "error reading outbox: err: %s", err.Error())
+		return o.maybeNuke(libkb.NewChatStorageInternalError(o.G(),
+			"error reading outbox: err: %s", err.Error()))
 	}
 
 	// Pop N off front
@@ -124,7 +138,8 @@ func (o *Outbox) PopN(n int) error {
 
 	// Write out box
 	if err := o.writeBox(obox); err != nil {
-		return libkb.NewChatStorageInternalError(o.G(), "error writing outbox: err: %s", err.Error())
+		return o.maybeNuke(libkb.NewChatStorageInternalError(o.G(),
+			"error writing outbox: err: %s", err.Error()))
 	}
 
 	return nil

@@ -2,6 +2,7 @@ package chat
 
 import (
 	"encoding/binary"
+	"sync"
 	"time"
 
 	"github.com/keybase/client/go/chat/storage"
@@ -52,10 +53,12 @@ func (s *CachingSender) Send(ctx context.Context, convID chat1.ConversationID,
 type NonblockingSender struct {
 	libkb.Contextified
 
-	sender    Sender
-	outbox    *storage.Outbox
-	msgSentCh chan struct{}
+	sender Sender
+	outbox *storage.Outbox
 }
+
+var deliverLoopOnce sync.Once
+var msgSentCh chan struct{}
 
 func NewNonblockingSender(g *libkb.GlobalContext, sender Sender) *NonblockingSender {
 
@@ -63,11 +66,13 @@ func NewNonblockingSender(g *libkb.GlobalContext, sender Sender) *NonblockingSen
 		Contextified: libkb.NewContextified(g),
 		sender:       sender,
 		outbox:       storage.NewOutbox(g),
-		msgSentCh:    make(chan struct{}, 100),
 	}
 
 	// Start up deliver routine
-	go s.deliverLoop()
+	deliverLoopOnce.Do(func() {
+		msgSentCh = make(chan struct{}, 100)
+		go s.deliverLoop()
+	})
 
 	return s
 }
@@ -82,7 +87,7 @@ func (s *NonblockingSender) Send(ctx context.Context, convID chat1.ConversationI
 	}
 
 	// Alert the deliver loop it should wake up
-	s.msgSentCh <- struct{}{}
+	msgSentCh <- struct{}{}
 
 	return oid, nil, nil
 }
@@ -91,15 +96,19 @@ func (s *NonblockingSender) deliverLoop() {
 	for {
 		// Wait for the signal to take action
 		select {
-		case <-s.msgSentCh:
+		case <-msgSentCh:
+			s.G().Log.Debug("flushing outbox on new message")
 		case <-time.After(time.Minute):
 		}
 
 		// Fetch outbox
 		obrs, err := s.outbox.Pull()
 		if err != nil {
-			s.G().Log.Error("unable to flush outbox: err: %s", err.Error())
+			s.G().Log.Error("unable to pull outbox: err: %s", err.Error())
 			continue
+		}
+		if len(obrs) > 0 {
+			s.G().Log.Debug("flushing %d items from the outbox", len(obrs))
 		}
 
 		// Send messages
