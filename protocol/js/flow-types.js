@@ -1269,40 +1269,40 @@ export function kbfsFSSyncStatusRpcPromise (request: $Exact<requestCommon & requ
   return new Promise((resolve, reject) => { kbfsFSSyncStatusRpc({...request, callback: (error, result) => { if (error) { reject(error) } else { resolve(result) } }}) })
 }
 
-export function kbfsMountGetAllAvailableDriveLettersRpc (request: Exact<requestCommon & {callback?: ?(err: ?any, response: kbfsMountGetAllAvailableDriveLettersResult) => void}>) {
-  engineRpcOutgoing({...request, method: 'kbfsMount.GetAllAvailableDriveLetters'})
+export function kbfsMountGetAllAvailableMountDrivesRpc (request: Exact<requestCommon & {callback?: ?(err: ?any, response: kbfsMountGetAllAvailableMountDrivesResult) => void}>) {
+  engineRpcOutgoing({...request, method: 'kbfsMount.GetAllAvailableMountDrives'})
 }
 
-export function kbfsMountGetAllAvailableDriveLettersRpcChannelMap (channelConfig: ChannelConfig<*>, request: $Exact<requestCommon & {callback?: ?(err: ?any, response: kbfsMountGetAllAvailableDriveLettersResult) => void}>): ChannelMap<*> {
-  return _channelMapRpcHelper(channelConfig, (incomingCallMap, callback) => kbfsMountGetAllAvailableDriveLettersRpc({...request, incomingCallMap, callback}))
+export function kbfsMountGetAllAvailableMountDrivesRpcChannelMap (channelConfig: ChannelConfig<*>, request: $Exact<requestCommon & {callback?: ?(err: ?any, response: kbfsMountGetAllAvailableMountDrivesResult) => void}>): ChannelMap<*> {
+  return _channelMapRpcHelper(channelConfig, (incomingCallMap, callback) => kbfsMountGetAllAvailableMountDrivesRpc({...request, incomingCallMap, callback}))
 }
 
-export function kbfsMountGetAllAvailableDriveLettersRpcPromise (request: $Exact<requestCommon & {callback?: ?(err: ?any, response: kbfsMountGetAllAvailableDriveLettersResult) => void}>): Promise<kbfsMountGetAllAvailableDriveLettersResult> {
-  return new Promise((resolve, reject) => { kbfsMountGetAllAvailableDriveLettersRpc({...request, callback: (error, result) => { if (error) { reject(error) } else { resolve(result) } }}) })
+export function kbfsMountGetAllAvailableMountDrivesRpcPromise (request: $Exact<requestCommon & {callback?: ?(err: ?any, response: kbfsMountGetAllAvailableMountDrivesResult) => void}>): Promise<kbfsMountGetAllAvailableMountDrivesResult> {
+  return new Promise((resolve, reject) => { kbfsMountGetAllAvailableMountDrivesRpc({...request, callback: (error, result) => { if (error) { reject(error) } else { resolve(result) } }}) })
 }
 
-export function kbfsMountGetCurrentDriveLetterRpc (request: Exact<requestCommon & {callback?: ?(err: ?any, response: kbfsMountGetCurrentDriveLetterResult) => void}>) {
-  engineRpcOutgoing({...request, method: 'kbfsMount.GetCurrentDriveLetter'})
+export function kbfsMountGetCurrentMountDriveRpc (request: Exact<requestCommon & {callback?: ?(err: ?any, response: kbfsMountGetCurrentMountDriveResult) => void}>) {
+  engineRpcOutgoing({...request, method: 'kbfsMount.GetCurrentMountDrive'})
 }
 
-export function kbfsMountGetCurrentDriveLetterRpcChannelMap (channelConfig: ChannelConfig<*>, request: $Exact<requestCommon & {callback?: ?(err: ?any, response: kbfsMountGetCurrentDriveLetterResult) => void}>): ChannelMap<*> {
-  return _channelMapRpcHelper(channelConfig, (incomingCallMap, callback) => kbfsMountGetCurrentDriveLetterRpc({...request, incomingCallMap, callback}))
+export function kbfsMountGetCurrentMountDriveRpcChannelMap (channelConfig: ChannelConfig<*>, request: $Exact<requestCommon & {callback?: ?(err: ?any, response: kbfsMountGetCurrentMountDriveResult) => void}>): ChannelMap<*> {
+  return _channelMapRpcHelper(channelConfig, (incomingCallMap, callback) => kbfsMountGetCurrentMountDriveRpc({...request, incomingCallMap, callback}))
 }
 
-export function kbfsMountGetCurrentDriveLetterRpcPromise (request: $Exact<requestCommon & {callback?: ?(err: ?any, response: kbfsMountGetCurrentDriveLetterResult) => void}>): Promise<kbfsMountGetCurrentDriveLetterResult> {
-  return new Promise((resolve, reject) => { kbfsMountGetCurrentDriveLetterRpc({...request, callback: (error, result) => { if (error) { reject(error) } else { resolve(result) } }}) })
+export function kbfsMountGetCurrentMountDriveRpcPromise (request: $Exact<requestCommon & {callback?: ?(err: ?any, response: kbfsMountGetCurrentMountDriveResult) => void}>): Promise<kbfsMountGetCurrentMountDriveResult> {
+  return new Promise((resolve, reject) => { kbfsMountGetCurrentMountDriveRpc({...request, callback: (error, result) => { if (error) { reject(error) } else { resolve(result) } }}) })
 }
 
-export function kbfsMountSetCurrentDriveLetterRpc (request: Exact<requestCommon & requestErrorCallback & {param: kbfsMountSetCurrentDriveLetterRpcParam}>) {
-  engineRpcOutgoing({...request, method: 'kbfsMount.SetCurrentDriveLetter'})
+export function kbfsMountSetCurrentMountDriveRpc (request: Exact<requestCommon & requestErrorCallback & {param: kbfsMountSetCurrentMountDriveRpcParam}>) {
+  engineRpcOutgoing({...request, method: 'kbfsMount.SetCurrentMountDrive'})
 }
 
-export function kbfsMountSetCurrentDriveLetterRpcChannelMap (channelConfig: ChannelConfig<*>, request: $Exact<requestCommon & requestErrorCallback & {param: kbfsMountSetCurrentDriveLetterRpcParam}>): ChannelMap<*> {
-  return _channelMapRpcHelper(channelConfig, (incomingCallMap, callback) => kbfsMountSetCurrentDriveLetterRpc({...request, incomingCallMap, callback}))
+export function kbfsMountSetCurrentMountDriveRpcChannelMap (channelConfig: ChannelConfig<*>, request: $Exact<requestCommon & requestErrorCallback & {param: kbfsMountSetCurrentMountDriveRpcParam}>): ChannelMap<*> {
+  return _channelMapRpcHelper(channelConfig, (incomingCallMap, callback) => kbfsMountSetCurrentMountDriveRpc({...request, incomingCallMap, callback}))
 }
 
-export function kbfsMountSetCurrentDriveLetterRpcPromise (request: $Exact<requestCommon & requestErrorCallback & {param: kbfsMountSetCurrentDriveLetterRpcParam}>): Promise<any> {
-  return new Promise((resolve, reject) => { kbfsMountSetCurrentDriveLetterRpc({...request, callback: (error, result) => { if (error) { reject(error) } else { resolve(result) } }}) })
+export function kbfsMountSetCurrentMountDriveRpcPromise (request: $Exact<requestCommon & requestErrorCallback & {param: kbfsMountSetCurrentMountDriveRpcParam}>): Promise<any> {
+  return new Promise((resolve, reject) => { kbfsMountSetCurrentMountDriveRpc({...request, callback: (error, result) => { if (error) { reject(error) } else { resolve(result) } }}) })
 }
 
 export function logRegisterLoggerRpc (request: Exact<requestCommon & requestErrorCallback & {param: logRegisterLoggerRpcParam}>) {
@@ -4313,7 +4313,7 @@ export type kbfsFSSyncStatusRpcParam = Exact<{
   requestID: int
 }>
 
-export type kbfsMountSetCurrentDriveLetterRpcParam = Exact<{
+export type kbfsMountSetCurrentMountDriveRpcParam = Exact<{
   drive: string
 }>
 
@@ -4986,9 +4986,9 @@ type identifyUiConfirmResult = ConfirmResult
 
 type identifyUiDelegateIdentifyUIResult = int
 
-type kbfsMountGetAllAvailableDriveLettersResult = ?Array<string>
+type kbfsMountGetAllAvailableMountDrivesResult = ?Array<string>
 
-type kbfsMountGetCurrentDriveLetterResult = string
+type kbfsMountGetCurrentMountDriveResult = string
 
 type loginGetConfiguredAccountsResult = ?Array<ConfiguredAccount>
 
@@ -5205,9 +5205,9 @@ export type rpc =
   | kbfsFSEventRpc
   | kbfsFSSyncEventRpc
   | kbfsFSSyncStatusRpc
-  | kbfsMountGetAllAvailableDriveLettersRpc
-  | kbfsMountGetCurrentDriveLetterRpc
-  | kbfsMountSetCurrentDriveLetterRpc
+  | kbfsMountGetAllAvailableMountDrivesRpc
+  | kbfsMountGetCurrentMountDriveRpc
+  | kbfsMountSetCurrentMountDriveRpc
   | logRegisterLoggerRpc
   | loginAccountDeleteRpc
   | loginClearStoredSecretRpc
