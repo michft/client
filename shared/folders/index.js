@@ -2,10 +2,11 @@
 import React, {Component} from 'react'
 import Render from './render'
 import {connect} from 'react-redux'
-import {favoriteList, switchTab, toggleShowIgnored as onToggleShowIgnored} from '../actions/favorite'
+import {favoriteList} from '../actions/favorite'
 import {openInKBFS} from '../actions/kbfs'
 import {switchTo, navigateAppend} from '../actions/route-tree'
 
+import type {RouteProps} from '../route-tree/render-route'
 import type {TypedState} from '../constants/reducer'
 import type {FolderState} from '../constants/favorite'
 
@@ -17,7 +18,7 @@ export type Props = {
   username: ?string,
   navigateAppend: (path: any) => void,
   switchTab: (showingPrivate: boolean) => void,
-  onToggleShowIgnored: (isPrivate: boolean) => void,
+  onToggleShowIgnored: () => void,
   showingIgnored: boolean,
 }
 
@@ -51,26 +52,29 @@ class Folders extends Component<void, Props, void> {
   }
 }
 
+type FoldersRouteProps = RouteProps<{}, {showingIgnored: boolean}>
+type OwnProps = FoldersRouteProps & {showingPrivate: boolean}
+
 const ConnectedFolders = connect(
-  (state: TypedState, {routeProps, routeState, showingPrivate}) => ({
+  (state: TypedState, {routeState, showingPrivate}: OwnProps) => ({
     username: state.config.username,
     folderState: state.favorite ? state.favorite.folderState : null,
     showingPrivate: !!state.favorite && showingPrivate,
     showingIgnored: !!state.favorite && routeState.showingIgnored,
   }),
-  (dispatch: any, {routePath, routeState, setRouteState}) => ({
+  (dispatch: any, {routePath, routeState, setRouteState}: OwnProps) => ({
     favoriteList: () => { dispatch(favoriteList()) },
     navigateAppend: path => { dispatch(navigateAppend({selected: 'files', path})) },
     openInKBFS: path => { dispatch(openInKBFS(path)) },
-    switchTab: showingPrivate => { dispatch(switchTo(...routePath.pop(), showingPrivate ? 'private' : 'public')) },
+    switchTab: showingPrivate => { dispatch(switchTo(...routePath.pop().push(showingPrivate ? 'private' : 'public').toArray())) },
     onToggleShowIgnored: () => { setRouteState({showingIgnored: !routeState.showingIgnored}) }
   })
 )(Folders)
 
-export function PrivateFolders(props) {
+export function PrivateFolders(props: FoldersRouteProps) {
   return <ConnectedFolders showingPrivate={true} {...props} />
 }
 
-export function PublicFolders(props) {
+export function PublicFolders(props: FoldersRouteProps) {
   return <ConnectedFolders showingPrivate={false} {...props} />
 }

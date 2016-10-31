@@ -1,7 +1,6 @@
 // @flow
 import Devices from './devices'
 import DumbSheet from './dev/dumb-sheet'
-import Folders from './folders'
 import Login from './login'
 import MetaNavigator from './router/meta-navigator'
 import NoTab from './no-tab'

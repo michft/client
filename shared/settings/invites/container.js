@@ -5,7 +5,6 @@ import {connect} from 'react-redux'
 import Invites from './index'
 import {invitesReclaim, invitesRefresh, invitesSend, notificationsSave, notificationsToggle} from '../../actions/settings'
 
-import type {RouteComponentProps} from '../../route-tree'
 import type {Props} from './index'
 import type {TypedState} from '../../constants/reducer'
 import type {TypedDispatch} from '../../constants/types/flux'

@@ -130,6 +130,7 @@ function setupHMR (store) {
     }
   })
 
+  // $FlowIssue
   module.hot.accept(['../shared/main.desktop', '../shared/routes'], () => {
     store.dispatch(setRouteDef(require('../shared/routes').default))
   })

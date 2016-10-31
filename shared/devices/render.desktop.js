@@ -6,7 +6,7 @@ import {Box, Text, Icon, PopupMenu} from '../common-adapters'
 import flags from '../util/feature-flags'
 import {globalStyles, globalColors, globalMargins} from '../styles'
 
-type RevokedHeaderProps = {children?: Array<any>}
+type RevokedHeaderProps = {children?: Array<any>, onToggleExpanded: () => void}
 
 function RevokedHeader(props: RevokedHeaderProps) {
   const iconType = props.expanded ? 'iconfont-caret-down' : 'iconfont-caret-right'

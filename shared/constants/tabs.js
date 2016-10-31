@@ -31,6 +31,7 @@ const prettyNames = {
 }
 
 export type VisibleTab = ProfileTab
+| SearchTab
 | PeopleTab
 | FolderTab
 | DevicesTab

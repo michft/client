@@ -1,8 +1,8 @@
 // @flow
-import {Routes} from '../route-tree'
+import {RouteDefNode} from '../route-tree'
 import Profile from './container'
 
-const routeTree = new Routes({
+const routeTree = new RouteDefNode({
   component: Profile,
   initialState: {currentFriendshipsTab: 'Followers'},
   children: {

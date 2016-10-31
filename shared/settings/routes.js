@@ -1,5 +1,5 @@
 // @flow
-import {Routes} from '../route-tree'
+import {RouteDefNode} from '../route-tree'
 import {
   landingTab,
   updatePaymentTab,
@@ -20,7 +20,7 @@ import InviteGenerated from './invite-generated'
 import DevMenu from '../dev/dev-menu'
 import DumbSheet from '../dev/dumb-sheet'
 
-const routeTree = new Routes({
+const routeTree = new RouteDefNode({
   defaultSelected: landingTab,
   containerComponent: Settings,
   children: {

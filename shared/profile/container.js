@@ -22,6 +22,7 @@ import {profileTab} from '../constants/tabs'
 
 import type {MissingProof} from '../common-adapters/user-proofs'
 import type {Proof} from '../constants/tracker'
+import type {RouteProps} from '../route-tree/render-route'
 import type {Props} from './index'
 
 type OwnProps = {
@@ -29,7 +30,7 @@ type OwnProps = {
     username: ?string,
     uid: ?string,
   }
-}
+} & RouteProps<*, *>
 
 type EitherProps<P> = {
   type: 'ok',
@@ -115,6 +116,10 @@ export default connect(
   }),
   (stateProps, dispatchProps) => {
     const {username, uid} = stateProps
+    if (!uid) {
+      throw new Error('Attempted to render a Profile page with no uid set')
+    }
+
     const refresh = () => {
       dispatchProps.getProfile(username)
       dispatchProps.updateTrackers(username, uid)

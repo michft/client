@@ -6,14 +6,16 @@ import {connect} from 'react-redux'
 import {switchTo} from '../actions/route-tree'
 import Routable from '../util/routable'
 
+import type {RouteProps} from '../route-tree/render-route'
+
 // $FlowIssue type this connector
 export default connect(
-  (state, {routeSelected, routeLeafTags}) => ({
+  (state, {routeSelected, routeLeafTags}: RouteProps<*, *>) => ({
     showComingSoon: !flags.tabSettingsEnabled,
     selectedTab: routeSelected,
     isModal: routeLeafTags.modal,
   }),
-  (dispatch, {routePath}) => ({
-    onTabChange: tab => { dispatch(switchTo(...routePath, tab)) },
+  (dispatch, {routePath}: RouteProps<*, *>) => ({
+    onTabChange: tab => { dispatch(switchTo(...routePath.push(tab).toArray())) },
   })
 )(SettingsContainer)

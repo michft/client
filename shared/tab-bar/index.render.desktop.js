@@ -21,7 +21,14 @@ import type {Props} from './index.render'
 export type SearchButton = 'TabBar:searchButton'
 export const searchButton = 'TabBar:searchButton'
 
-function ProfileTabBarButton ({selected, username, badgeNumber, onClick}: {selected: boolean, username: string, badgeNumber: number, onClick: () => void}) {
+type ProfileTabBarButtonProps = {
+  selected: boolean,
+  username: string,
+  badgeNumber: number,
+  onClick: () => void,
+}
+
+function ProfileTabBarButton ({selected, username, badgeNumber, onClick}: ProfileTabBarButtonProps) {
   // $FlowIssue
   const avatar: Avatar = (
     <Avatar
@@ -44,7 +51,14 @@ function ProfileTabBarButton ({selected, username, badgeNumber, onClick}: {selec
   )
 }
 
-export default function TabBar ({selectedTab, onTabClick, username, badgeNumbers}) {
+type TabBarProps = {
+  selectedTab: VisibleTab,
+  onTabClick: (tab: VisibleTab) => void,
+  username: string,
+  badgeNumbers: { [key: VisibleTab]: number },
+}
+
+export default function TabBar ({selectedTab, onTabClick, username, badgeNumbers}: TabBarProps) {
   return (
     <Box style={stylesTabBar}>
       <TabBarButton

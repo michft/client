@@ -1,10 +1,33 @@
+// @flow
 import * as I from 'immutable'
 import React, {PureComponent} from 'react'
 import {pathToString} from './'
+import {LeafTags} from './'
 
-class RenderRouteNode extends PureComponent {
+import type {RouteDefNode, RouteStateNode} from './'
+
+export type RouteProps<P, S> = {
+  routeProps: P,
+  routeState: S,
+  routeSelected: string,
+  routePath: I.List<string>,
+  routeLeafTags: LeafTags,
+  setRouteState: (partialState: {}) => void,
+}
+
+type RenderRouteNodeProps = {
+  isContainer: boolean,
+  routeDef: RouteDefNode,
+  routeState: RouteStateNode,
+  setRouteState: (partialState: {}) => void,
+  path: I.List<string>,
+  leafTags?: LeafTags,
+  children?: React$Element<*>,
+}
+
+class RenderRouteNode extends PureComponent<*, RenderRouteNodeProps, *> {
   render() {
-    const {isContainer, routeDef, routeState, setRouteState, path, leafTags, partialState, children} = this.props
+    const {isContainer, routeDef, routeState, setRouteState, path, leafTags, children} = this.props
     const RouteComponent = isContainer ? routeDef.containerComponent : routeDef.component
     return (
       <RouteComponent
@@ -12,14 +35,21 @@ class RenderRouteNode extends PureComponent {
         routeState={routeDef.initialState.merge(routeState.state).toJS()}
         routeSelected={routeState.selected}
         routePath={path}
-        routeLeafTags={leafTags && leafTags.toJS()}
+        routeLeafTags={leafTags || LeafTags()}
         setRouteState={partialState => setRouteState(path, partialState)}
       >{children}</RouteComponent>
     )
   }
 }
 
-function _RenderRoute({routeDef, routeState, setRouteState, path}): React$Element {
+type _RenderRouteProps = {
+  routeDef: RouteDefNode,
+  routeState: RouteStateNode,
+  setRouteState: (partialState: {}) => void,
+  path: I.List<string>,
+}
+
+function _RenderRoute({routeDef, routeState, setRouteState, path}: _RenderRouteProps): {leafTags: LeafTags, component: React$Element<any>} {
   path = path || I.List()
 
   if (!routeDef) {
@@ -36,6 +66,7 @@ function _RenderRoute({routeDef, routeState, setRouteState, path}): React$Elemen
     return {
       component: (
         <RenderRouteNode
+          isContainer={false}
           routeDef={routeDef}
           routeState={routeState}
           path={path}
@@ -78,7 +109,7 @@ function _RenderRoute({routeDef, routeState, setRouteState, path}): React$Elemen
   }
 }
 
-export default class RenderRoute extends PureComponent {
+export default class RenderRoute extends PureComponent<*, _RenderRouteProps, *> {
   render() {
     return _RenderRoute(this.props).component
   }

@@ -11,7 +11,7 @@ import {
   devMenuTab,
 } from '../../constants/settings'
 
-import type {Props, BannerType, SettingsItem as SettingsItemType} from './index'
+import type {Props, SettingsItem as SettingsItemType} from './index'
 
 export function SettingsItem ({text, selected, onClick, badgeNumber}: SettingsItemType) {
   return (

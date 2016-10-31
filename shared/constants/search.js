@@ -105,7 +105,7 @@ export const waiting = 'search:waiting'
 export type Waiting = TypedAction<'search:waiting', {waiting: boolean}, void>
 
 export type SearchActions = Search | Results | SelectPlatform | SelectUserForInfo | AddUserToGroup
-  | RemoveUserFromGroup | ToggleUserGroup | Reset | Waiting | SetActive
+  | RemoveUserFromGroup | ToggleUserGroup | Reset | Waiting
 
 export function platformToIcon (platform: SearchPlatforms): IconType {
   return {

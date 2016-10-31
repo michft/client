@@ -11,12 +11,11 @@ import {folderTab} from './constants/tabs'
 import {switchTo} from './actions/route-tree'
 import TabBar from './tab-bar/index.render'
 
-import type {RouteNodeRecord} from './route-tree'
+import type {Tabs} from './constants/tabs'
 
 type Props = {
   menuBadge: boolean,
   switchTab: (tab: Tabs) => void,
-  routeTree: RouteNodeRecord<*,*>,
   provisioned: boolean,
   username: string,
   navigateBack: () => void,
@@ -48,19 +47,16 @@ const stylesTabsContainer = {
 
 export default connect(
   ({
-    routeTree,
     config: {extendedConfig, username},
     favorite: {publicBadge = 0, privateBadge = 0},
-    notifications: {menuBadge}}) => ({
-      routeTree,
-      provisioned: extendedConfig && !!extendedConfig.defaultDeviceID,
-      username,
-      menuBadge,
-      folderBadge: publicBadge + privateBadge,
-    }),
-  dispatch => {
-    return {
-      switchTab: tab => dispatch(switchTo(tab)),
-    }
-  }
+    notifications: {menuBadge}
+  }) => ({
+    provisioned: extendedConfig && !!extendedConfig.defaultDeviceID,
+    username,
+    menuBadge,
+    folderBadge: publicBadge + privateBadge,
+  }),
+  (dispatch: any) => ({
+    switchTab: tab => dispatch(switchTo(tab)),
+  })
 )(Nav)

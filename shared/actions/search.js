@@ -8,7 +8,7 @@ import {isFollowing as isFollowing_} from './config'
 
 import type {ExtraInfo, Search, Results, SelectPlatform, SelectUserForInfo,
   AddUserToGroup, RemoveUserFromGroup, ToggleUserGroup, SearchResult,
-  SearchPlatforms, Reset, Waiting, SetActive} from '../constants/search'
+  SearchPlatforms, Reset, Waiting} from '../constants/search'
 
 const {platformToLogo16, platformToLogo32, searchResultKeys} = Constants
 

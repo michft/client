@@ -1,7 +1,6 @@
 // @flow
 import * as I from 'immutable'
 import * as Constants from '../constants/route-tree'
-import type {RouteTreeState} from '../constants/route-tree'
 import {
   InvalidRouteError,
   getPath,
@@ -12,12 +11,12 @@ import {
   checkRouteState,
 } from '../route-tree'
 
-const StateRecord = I.Record({
+export const State = I.Record({
   routeDef: null,
   routeState: null,
 })
 
-const initialState = StateRecord()
+const initialState = State()
 
 function routeDefReducer(routeDef, action) {
   switch (action.type) {
@@ -73,7 +72,7 @@ function routeStateReducer(routeDef, routeState, action) {
   }
 }
 
-export default function routeTreeReducer (state: RouteTreeState = initialState, action: any): RouteTreeState {
+export default function routeTreeReducer (state: State = initialState, action: any): State {
   let {routeDef, routeState} = state
 
   const newRouteDef = routeDefReducer(routeDef, action)

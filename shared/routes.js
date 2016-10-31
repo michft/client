@@ -1,6 +1,6 @@
 import * as I from 'immutable'
 
-import {Routes} from './route-tree'
+import {RouteDef} from './route-tree'
 import devicesRoutes from './devices/routes'
 import foldersRoutes from './folders/routes'
 import profileRoutes from './profile/routes'
@@ -16,7 +16,7 @@ import {
   settingsTab,
 } from './constants/tabs'
 
-const routeTree = new Routes({
+const routeTree = new RouteDef({
   defaultSelected: devicesTab,
   containerComponent: Nav,
   children: {

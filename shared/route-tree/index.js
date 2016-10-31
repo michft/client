@@ -1,32 +1,54 @@
 // @flow
 import * as I from 'immutable'
+import {Component} from 'react'
+
+import type {ConnectedComponent} from 'react-redux'
+import type {ConnectedComponent as TypedConnectedComponent} from '../util/typed-connect'
+
+type LeafTagsParams = {
+  modal: boolean,
+}
+
+export const LeafTags = I.Record({
+  modal: false,
+})
 
 const _RouteDefNode = I.Record({
   defaultSelected: null,
   component: null,
   containerComponent: null,
-  tags: I.Map(),
+  tags: LeafTags(),
   initialState: I.Map(),
   children: I.Map(),
 })
 
-export class Routes extends _RouteDefNode {
-  constructor({defaultSelected, component, containerComponent, tags, initialState, children}) {
+type RouteDefParams<P> = {
+  defaultSelected?: string,
+  tags?: LeafTags,
+  initialState?: {},
+  children: {},
+} & (
+  { component?: Component<*,P,*> | Class<ConnectedComponent<P,*,*,*>> | Class<TypedConnectedComponent<P>> }
+  | { containerComponent: Component<*,P,*> }
+)
+
+export class RouteDefNode extends _RouteDefNode {
+  constructor({defaultSelected, component, containerComponent, tags, initialState, children}: RouteDefParams<*>) {
     super({
       defaultSelected: defaultSelected || null,
       component,
       containerComponent,
-      tags: I.Map(tags),
+      tags: LeafTags(tags),
       initialState: I.Map(initialState),
       props: I.Map(),
       state: I.Map(),
       children: I.Seq(children)
-        .map(params => params instanceof Routes || typeof params === 'function' ? params : new Routes(params))
+        .map(params => params instanceof RouteDefNode || typeof params === 'function' ? params : new RouteDefNode(params))
         .toMap(),
     })
   }
 
-  getChild(name) {
+  getChild(name: string): ?RouteDefNode {
     const childDef = this.children.get(name)
     if (!childDef) {
       return
@@ -45,19 +67,34 @@ const _RouteStateNode = I.Record({
   children: I.Map(),
 })
 
+type RouteStateParams = {
+  selected: string | null,
+  props?: I.Map<string, any>,
+  state?: I.Map<string, any>,
+  children?: I.Map<string, _RouteStateNode>,
+}
+
 export class RouteStateNode extends _RouteStateNode {
-  getChild(name) {
+  constructor(data: RouteStateParams) {
+    super(data)
+  }
+
+  getChild(name: string): RouteStateNode {
     return this.children.get(name)
   }
 
-  updateChild(name, op) {
+  updateChild(name: string, op: (node: RouteStateNode) => ?RouteStateNode): RouteStateNode {
     return this.updateIn(['children', name], op)
   }
 }
 
 export class InvalidRouteError extends Error {}
 
-function _routeSet(routeDef, path, routeState) {
+export type Path = Iterable<string>
+type PathLike = Iterable<string | {selected: string | null}>
+export type PropsPath = I.IndexedIterable<{selected: string | null, props?: {}}>
+
+function _routeSet(routeDef: RouteDefNode, path: PropsPath, routeState: ?RouteStateNode): RouteStateNode {
   const pathHead = path && path.first()
 
   let newRouteState
@@ -72,7 +109,7 @@ function _routeSet(routeDef, path, routeState) {
 
   const selected = newRouteState.selected
   if (selected !== null) {
-    let childDef = routeDef.getChild(selected)
+    const childDef = routeDef.getChild(selected)
     if (!childDef) {
       throw new InvalidRouteError(`Invalid route selected: ${selected}`)
     }
@@ -89,7 +126,7 @@ function _routeSet(routeDef, path, routeState) {
   return newRouteState
 }
 
-export function routeSetProps(routeDef, pathProps, routeState) {
+export function routeSetProps(routeDef: RouteDefNode, pathProps: PathLike, routeState: ?RouteStateNode): RouteStateNode {
   const pathSeq = I.Seq(pathProps).map(item => {
     if (typeof item === 'string') {
       return {selected: item}
@@ -101,11 +138,11 @@ export function routeSetProps(routeDef, pathProps, routeState) {
   return _routeSet(routeDef, pathSeq, routeState)
 }
 
-export function routeNavigate(routeDef, pathProps, routeState) {
-  return routeSetProps(routeDef, pathProps.concat({selected: null}), routeState)
+export function routeNavigate(routeDef: RouteDefNode, pathProps: PathLike, routeState: ?RouteStateNode): RouteStateNode {
+  return routeSetProps(routeDef, I.List(pathProps).push({selected: null}), routeState)
 }
 
-export function routeSetState(routeDef, path, routeState, partialState) {
+export function routeSetState(routeDef: RouteDefNode, path: Path, routeState: RouteStateNode, partialState: {}): RouteStateNode {
   const pathSeq = I.Seq(path)
   if (!pathSeq.size) {
     return routeState.update('state', state => state.merge(partialState))
@@ -115,7 +152,10 @@ export function routeSetState(routeDef, path, routeState, partialState) {
   )
 }
 
-export function routeClear(path, routeState) {
+export function routeClear(path: Path, routeState: ?RouteStateNode): ?RouteStateNode {
+  if (!routeState) {
+    return null
+  }
   const pathSeq = I.Seq(path)
   if (!pathSeq.size) {
     return null
@@ -125,12 +165,12 @@ export function routeClear(path, routeState) {
   )
 }
 
-export function checkRouteState(routeDef, routeState) {
+export function checkRouteState(routeDef: RouteDefNode, routeState: ?RouteStateNode) {
   if (!routeDef) {
     return
   }
 
-  const path = []
+  let path = []
   let curDef = routeDef
   let curState = routeState
   while (curState && curState.selected !== null) {
@@ -149,7 +189,7 @@ export function checkRouteState(routeDef, routeState) {
   }
 }
 
-export function getPath(routeState) {
+export function getPath(routeState: RouteStateNode) {
   const path = []
   let curState = routeState
   while (curState && curState.selected !== null) {
@@ -159,6 +199,6 @@ export function getPath(routeState) {
   return I.List(path)
 }
 
-export function pathToString(path) {
+export function pathToString(path: Array<string> | I.IndexedIterable<string>) {
   return '/' + path.join('/')
 }

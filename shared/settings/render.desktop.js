@@ -1,10 +1,11 @@
 // @flow
 import React, {Component} from 'react'
-import SettingsNav, {SettingsItem} from './nav'
+import SettingsNav from './nav'
 import {Box} from '../common-adapters'
 import {globalStyles, globalColors, globalMargins} from '../styles'
+import SettingsHelp from './help.desktop'
 
-import type {Props} from './render'
+import type {BannerType, Props} from './render'
 
 function Banner ({element, type}: {element: React$Element<*>, type: BannerType}) {
   return (
