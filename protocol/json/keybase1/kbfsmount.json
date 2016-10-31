@@ -3,18 +3,18 @@
   "imports": [],
   "types": [],
   "messages": {
-    "GetCurrentDriveLetter": {
+    "GetCurrentMountDrive": {
       "request": [],
       "response": "string"
     },
-    "GetAllAvailableDriveLetters": {
+    "GetAllAvailableMountDrives": {
       "request": [],
       "response": {
         "type": "array",
         "items": "string"
       }
     },
-    "SetCurrentDriveLetter": {
+    "SetCurrentMountDrive": {
       "request": [
         {
           "name": "drive",

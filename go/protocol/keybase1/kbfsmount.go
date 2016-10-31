@@ -8,60 +8,60 @@ import (
 	context "golang.org/x/net/context"
 )
 
-type GetCurrentDriveLetterArg struct {
+type GetCurrentMountDriveArg struct {
 }
 
-type GetAllAvailableDriveLettersArg struct {
+type GetAllAvailableMountDrivesArg struct {
 }
 
-type SetCurrentDriveLetterArg struct {
+type SetCurrentMountDriveArg struct {
 	Drive string `codec:"drive" json:"drive"`
 }
 
 type KbfsMountInterface interface {
-	GetCurrentDriveLetter(context.Context) (string, error)
-	GetAllAvailableDriveLetters(context.Context) ([]string, error)
-	SetCurrentDriveLetter(context.Context, string) error
+	GetCurrentMountDrive(context.Context) (string, error)
+	GetAllAvailableMountDrives(context.Context) ([]string, error)
+	SetCurrentMountDrive(context.Context, string) error
 }
 
 func KbfsMountProtocol(i KbfsMountInterface) rpc.Protocol {
 	return rpc.Protocol{
 		Name: "keybase.1.kbfsMount",
 		Methods: map[string]rpc.ServeHandlerDescription{
-			"GetCurrentDriveLetter": {
+			"GetCurrentMountDrive": {
 				MakeArg: func() interface{} {
-					ret := make([]GetCurrentDriveLetterArg, 1)
+					ret := make([]GetCurrentMountDriveArg, 1)
 					return &ret
 				},
 				Handler: func(ctx context.Context, args interface{}) (ret interface{}, err error) {
-					ret, err = i.GetCurrentDriveLetter(ctx)
+					ret, err = i.GetCurrentMountDrive(ctx)
 					return
 				},
 				MethodType: rpc.MethodCall,
 			},
-			"GetAllAvailableDriveLetters": {
+			"GetAllAvailableMountDrives": {
 				MakeArg: func() interface{} {
-					ret := make([]GetAllAvailableDriveLettersArg, 1)
+					ret := make([]GetAllAvailableMountDrivesArg, 1)
 					return &ret
 				},
 				Handler: func(ctx context.Context, args interface{}) (ret interface{}, err error) {
-					ret, err = i.GetAllAvailableDriveLetters(ctx)
+					ret, err = i.GetAllAvailableMountDrives(ctx)
 					return
 				},
 				MethodType: rpc.MethodCall,
 			},
-			"SetCurrentDriveLetter": {
+			"SetCurrentMountDrive": {
 				MakeArg: func() interface{} {
-					ret := make([]SetCurrentDriveLetterArg, 1)
+					ret := make([]SetCurrentMountDriveArg, 1)
 					return &ret
 				},
 				Handler: func(ctx context.Context, args interface{}) (ret interface{}, err error) {
-					typedArgs, ok := args.(*[]SetCurrentDriveLetterArg)
+					typedArgs, ok := args.(*[]SetCurrentMountDriveArg)
 					if !ok {
-						err = rpc.NewTypeError((*[]SetCurrentDriveLetterArg)(nil), args)
+						err = rpc.NewTypeError((*[]SetCurrentMountDriveArg)(nil), args)
 						return
 					}
-					err = i.SetCurrentDriveLetter(ctx, (*typedArgs)[0].Drive)
+					err = i.SetCurrentMountDrive(ctx, (*typedArgs)[0].Drive)
 					return
 				},
 				MethodType: rpc.MethodCall,
@@ -74,18 +74,18 @@ type KbfsMountClient struct {
 	Cli rpc.GenericClient
 }
 
-func (c KbfsMountClient) GetCurrentDriveLetter(ctx context.Context) (res string, err error) {
-	err = c.Cli.Call(ctx, "keybase.1.kbfsMount.GetCurrentDriveLetter", []interface{}{GetCurrentDriveLetterArg{}}, &res)
+func (c KbfsMountClient) GetCurrentMountDrive(ctx context.Context) (res string, err error) {
+	err = c.Cli.Call(ctx, "keybase.1.kbfsMount.GetCurrentMountDrive", []interface{}{GetCurrentMountDriveArg{}}, &res)
 	return
 }
 
-func (c KbfsMountClient) GetAllAvailableDriveLetters(ctx context.Context) (res []string, err error) {
-	err = c.Cli.Call(ctx, "keybase.1.kbfsMount.GetAllAvailableDriveLetters", []interface{}{GetAllAvailableDriveLettersArg{}}, &res)
+func (c KbfsMountClient) GetAllAvailableMountDrives(ctx context.Context) (res []string, err error) {
+	err = c.Cli.Call(ctx, "keybase.1.kbfsMount.GetAllAvailableMountDrives", []interface{}{GetAllAvailableMountDrivesArg{}}, &res)
 	return
 }
 
-func (c KbfsMountClient) SetCurrentDriveLetter(ctx context.Context, drive string) (err error) {
-	__arg := SetCurrentDriveLetterArg{Drive: drive}
-	err = c.Cli.Call(ctx, "keybase.1.kbfsMount.SetCurrentDriveLetter", []interface{}{__arg}, nil)
+func (c KbfsMountClient) SetCurrentMountDrive(ctx context.Context, drive string) (err error) {
+	__arg := SetCurrentMountDriveArg{Drive: drive}
+	err = c.Cli.Call(ctx, "keybase.1.kbfsMount.SetCurrentMountDrive", []interface{}{__arg}, nil)
 	return
 }
