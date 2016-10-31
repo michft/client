@@ -8,60 +8,60 @@ import (
 	context "golang.org/x/net/context"
 )
 
-type GetCurrentMountDriveArg struct {
+type GetCurrentMountDirArg struct {
 }
 
-type GetAllAvailableMountDrivesArg struct {
+type GetAllAvailableMountDirsArg struct {
 }
 
-type SetCurrentMountDriveArg struct {
-	Drive string `codec:"drive" json:"drive"`
+type SetCurrentMountDirArg struct {
+	Dir string `codec:"dir" json:"dir"`
 }
 
 type KbfsMountInterface interface {
-	GetCurrentMountDrive(context.Context) (string, error)
-	GetAllAvailableMountDrives(context.Context) ([]string, error)
-	SetCurrentMountDrive(context.Context, string) error
+	GetCurrentMountDir(context.Context) (string, error)
+	GetAllAvailableMountDirs(context.Context) ([]string, error)
+	SetCurrentMountDir(context.Context, string) error
 }
 
 func KbfsMountProtocol(i KbfsMountInterface) rpc.Protocol {
 	return rpc.Protocol{
 		Name: "keybase.1.kbfsMount",
 		Methods: map[string]rpc.ServeHandlerDescription{
-			"GetCurrentMountDrive": {
+			"GetCurrentMountDir": {
 				MakeArg: func() interface{} {
-					ret := make([]GetCurrentMountDriveArg, 1)
+					ret := make([]GetCurrentMountDirArg, 1)
 					return &ret
 				},
 				Handler: func(ctx context.Context, args interface{}) (ret interface{}, err error) {
-					ret, err = i.GetCurrentMountDrive(ctx)
+					ret, err = i.GetCurrentMountDir(ctx)
 					return
 				},
 				MethodType: rpc.MethodCall,
 			},
-			"GetAllAvailableMountDrives": {
+			"GetAllAvailableMountDirs": {
 				MakeArg: func() interface{} {
-					ret := make([]GetAllAvailableMountDrivesArg, 1)
+					ret := make([]GetAllAvailableMountDirsArg, 1)
 					return &ret
 				},
 				Handler: func(ctx context.Context, args interface{}) (ret interface{}, err error) {
-					ret, err = i.GetAllAvailableMountDrives(ctx)
+					ret, err = i.GetAllAvailableMountDirs(ctx)
 					return
 				},
 				MethodType: rpc.MethodCall,
 			},
-			"SetCurrentMountDrive": {
+			"SetCurrentMountDir": {
 				MakeArg: func() interface{} {
-					ret := make([]SetCurrentMountDriveArg, 1)
+					ret := make([]SetCurrentMountDirArg, 1)
 					return &ret
 				},
 				Handler: func(ctx context.Context, args interface{}) (ret interface{}, err error) {
-					typedArgs, ok := args.(*[]SetCurrentMountDriveArg)
+					typedArgs, ok := args.(*[]SetCurrentMountDirArg)
 					if !ok {
-						err = rpc.NewTypeError((*[]SetCurrentMountDriveArg)(nil), args)
+						err = rpc.NewTypeError((*[]SetCurrentMountDirArg)(nil), args)
 						return
 					}
-					err = i.SetCurrentMountDrive(ctx, (*typedArgs)[0].Drive)
+					err = i.SetCurrentMountDir(ctx, (*typedArgs)[0].Dir)
 					return
 				},
 				MethodType: rpc.MethodCall,
@@ -74,18 +74,18 @@ type KbfsMountClient struct {
 	Cli rpc.GenericClient
 }
 
-func (c KbfsMountClient) GetCurrentMountDrive(ctx context.Context) (res string, err error) {
-	err = c.Cli.Call(ctx, "keybase.1.kbfsMount.GetCurrentMountDrive", []interface{}{GetCurrentMountDriveArg{}}, &res)
+func (c KbfsMountClient) GetCurrentMountDir(ctx context.Context) (res string, err error) {
+	err = c.Cli.Call(ctx, "keybase.1.kbfsMount.GetCurrentMountDir", []interface{}{GetCurrentMountDirArg{}}, &res)
 	return
 }
 
-func (c KbfsMountClient) GetAllAvailableMountDrives(ctx context.Context) (res []string, err error) {
-	err = c.Cli.Call(ctx, "keybase.1.kbfsMount.GetAllAvailableMountDrives", []interface{}{GetAllAvailableMountDrivesArg{}}, &res)
+func (c KbfsMountClient) GetAllAvailableMountDirs(ctx context.Context) (res []string, err error) {
+	err = c.Cli.Call(ctx, "keybase.1.kbfsMount.GetAllAvailableMountDirs", []interface{}{GetAllAvailableMountDirsArg{}}, &res)
 	return
 }
 
-func (c KbfsMountClient) SetCurrentMountDrive(ctx context.Context, drive string) (err error) {
-	__arg := SetCurrentMountDriveArg{Drive: drive}
-	err = c.Cli.Call(ctx, "keybase.1.kbfsMount.SetCurrentMountDrive", []interface{}{__arg}, nil)
+func (c KbfsMountClient) SetCurrentMountDir(ctx context.Context, dir string) (err error) {
+	__arg := SetCurrentMountDirArg{Dir: dir}
+	err = c.Cli.Call(ctx, "keybase.1.kbfsMount.SetCurrentMountDir", []interface{}{__arg}, nil)
 	return
 }

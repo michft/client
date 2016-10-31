@@ -3,21 +3,21 @@
   "imports": [],
   "types": [],
   "messages": {
-    "GetCurrentMountDrive": {
+    "GetCurrentMountDir": {
       "request": [],
       "response": "string"
     },
-    "GetAllAvailableMountDrives": {
+    "GetAllAvailableMountDirs": {
       "request": [],
       "response": {
         "type": "array",
         "items": "string"
       }
     },
-    "SetCurrentMountDrive": {
+    "SetCurrentMountDir": {
       "request": [
         {
-          "name": "drive",
+          "name": "dir",
           "type": "string"
         }
       ],
