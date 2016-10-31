@@ -12,6 +12,7 @@ import (
 
 	"golang.org/x/net/context"
 
+	"github.com/jonboulle/clockwork"
 	"github.com/keybase/client/go/chat"
 	"github.com/keybase/client/go/chat/storage"
 	"github.com/keybase/client/go/kbtest"
@@ -20,8 +21,9 @@ import (
 )
 
 type chatTestUserContext struct {
-	u *kbtest.FakeUser
-	h *chatLocalHandler
+	u     *kbtest.FakeUser
+	h     *chatLocalHandler
+	clock clockwork.Clock
 }
 
 func (tuc *chatTestUserContext) user() *kbtest.FakeUser {
@@ -73,9 +75,12 @@ func (c *chatTestContext) as(t *testing.T, user *kbtest.FakeUser) *chatTestUserC
 	tc.G.ConvSource = chat.NewHybridConversationSource(tc.G, h.boxer, storage, mockRemote)
 	h.setTestRemoteClient(mockRemote)
 
+	clock := clockwork.NewFakeClock()
+	tc.G.SetClock(clock)
 	tuc := &chatTestUserContext{
-		h: h,
-		u: user,
+		h:     h,
+		u:     user,
+		clock: clock,
 	}
 	c.userContextCache[user.Username] = tuc
 	return tuc

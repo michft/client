@@ -98,7 +98,7 @@ func (s *NonblockingSender) deliverLoop() {
 		select {
 		case <-msgSentCh:
 			s.G().Log.Debug("flushing outbox on new message")
-		case <-time.After(time.Minute):
+		case <-s.G().Clock().After(time.Minute):
 		}
 
 		// Fetch outbox
