@@ -23,24 +23,16 @@ func NewKBFSMountHandler(xp rpc.Transporter, g *libkb.GlobalContext) *KBFSMountH
 	}
 }
 
-func (h *KBFSMountHandler) GetCurrentDriveLetter(ctx context.Context) (res string, err error) {
+func (h *KBFSMountHandler) GetCurrentMountDir(ctx context.Context) (res string, err error) {
 
-	mountdir, err := h.G().Env.GetMountDir()
-	if mountdir == "" {
-		drives := getDriveLetters(true)
-		if len(drives) > 0 {
-			mountdir = drives[0]
-			err = h.SetCurrentDriveLetter(ctx, mountdir)
-		}
-	}
-	return mountdir, err
+	return h.G().Env.GetMountDir()
 }
 
-func (h *KBFSMountHandler) GetAllAvailableDriveLetters(ctx context.Context) (res []string, err error) {
+func (h *KBFSMountHandler) GetAllAvailableMountDirs(ctx context.Context) (res []string, err error) {
 	return getDriveLetters(false), nil
 }
 
-func (h *KBFSMountHandler) SetCurrentDriveLetter(_ context.Context, drive string) (err error) {
+func (h *KBFSMountHandler) SetCurrentMountDir(_ context.Context, drive string) (err error) {
 	w := h.G().Env.GetConfigWriter()
 	w.SetStringAtPath("mountdir", drive)
 	h.G().ConfigReload()

@@ -66,9 +66,9 @@ func (s *CmdCtlStop) doKillKBFS() {
 		s.G().Log.Errorf("KillKBFS: Error in GetKBFSMountClient: %s", err.Error())
 	}
 
-	mountDir, err := cli.GetCurrentDriveLetter(context.TODO())
+	mountDir, err := cli.GetCurrentMountDir(context.TODO())
 	if err != nil {
-		s.G().Log.Errorf("KillKBFS: Error in GetCurrentDriveLetter: %s", err.Error())
+		s.G().Log.Errorf("KillKBFS: Error in GetCurrentMountDir: %s", err.Error())
 	} else {
 		// open special "file". Errors not relevant.
 		s.G().Log.Debug("KillKBFS: opening .kbfs_unmount")

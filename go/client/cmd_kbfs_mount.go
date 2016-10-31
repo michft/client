@@ -52,13 +52,13 @@ func (s *CmdKbfsMount) Run() error {
 	}
 	switch s.cmd {
 	case "get":
-		result, err2 := cli.GetCurrentDriveLetter(context.TODO())
+		result, err2 := cli.GetCurrentMountDir(context.TODO())
 		dui.Printf("%s", result)
 		err = err2
 	case "set":
-		err = cli.SetCurrentDriveLetter(context.TODO(), s.arg)
+		err = cli.SetCurrentMountDir(context.TODO(), s.arg)
 	case "getall":
-		results, err2 := cli.GetAllAvailableDriveLetters(context.TODO())
+		results, err2 := cli.GetAllAvailableMountDirs(context.TODO())
 		dui.Printf("%v", results)
 		err = err2
 	}
