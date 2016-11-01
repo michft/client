@@ -1,8 +1,7 @@
 // @flow
 import * as I from 'immutable'
 import React, {PureComponent} from 'react'
-import {pathToString} from './'
-import {LeafTags} from './'
+import {LeafTags, pathToString} from './'
 
 import type {RouteDefNode, RouteStateNode} from './'
 
@@ -26,7 +25,7 @@ type RenderRouteNodeProps = {
 }
 
 class RenderRouteNode extends PureComponent<*, RenderRouteNodeProps, *> {
-  render() {
+  render () {
     const {isContainer, routeDef, routeState, setRouteState, path, leafTags, children} = this.props
     const RouteComponent = isContainer ? routeDef.containerComponent : routeDef.component
     return (
@@ -49,7 +48,7 @@ type _RenderRouteProps = {
   path: I.List<string>,
 }
 
-function _RenderRoute({routeDef, routeState, setRouteState, path}: _RenderRouteProps): {leafTags: LeafTags, component: React$Element<any>} {
+function _RenderRoute ({routeDef, routeState, setRouteState, path}: _RenderRouteProps): {leafTags: LeafTags, component: React$Element<any>} {
   path = path || I.List()
 
   if (!routeDef) {
@@ -110,7 +109,7 @@ function _RenderRoute({routeDef, routeState, setRouteState, path}: _RenderRouteP
 }
 
 export default class RenderRoute extends PureComponent<*, _RenderRouteProps, *> {
-  render() {
+  render () {
     return _RenderRoute(this.props).component
   }
 }

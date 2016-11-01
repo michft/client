@@ -1,5 +1,4 @@
 // @flow
-import * as I from 'immutable'
 import * as Constants from '../constants/route-tree'
 import type {RouteDefNode, Path} from '../route-tree'
 import type {Action} from '../constants/types/flux'

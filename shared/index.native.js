@@ -1,6 +1,5 @@
 // @flow
 import './globals.native'
-// $FlowIssue
 import Nav from './nav'
 import React, {Component} from 'react'
 import configureStore from './store/configure-store'

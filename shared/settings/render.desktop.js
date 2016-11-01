@@ -1,8 +1,8 @@
 // @flow
-import React, {Component} from 'react'
+import React from 'react'
 import SettingsNav from './nav'
 import {Box} from '../common-adapters'
-import {globalStyles, globalColors, globalMargins} from '../styles'
+import {globalStyles, globalColors} from '../styles'
 import SettingsHelp from './help.desktop'
 
 import type {BannerType, Props} from './render'

@@ -1,8 +1,8 @@
 // @flow
 
-import React, {Component} from 'react'
+import React from 'react'
 import {Box, Avatar} from '../common-adapters'
-import {TabBarButton, TabBarItem} from '../common-adapters/tab-bar'
+import {TabBarButton} from '../common-adapters/tab-bar'
 import {globalStyles, globalColors} from '../styles'
 import flags from '../util/feature-flags'
 import {
@@ -14,8 +14,6 @@ import {
   settingsTab,
 } from '../constants/tabs'
 
-import type {VisibleTab} from '../constants/tabs'
-import type {IconType} from '../common-adapters/icon'
 import type {Props} from './index.render'
 
 export type SearchButton = 'TabBar:searchButton'
@@ -51,14 +49,7 @@ function ProfileTabBarButton ({selected, username, badgeNumber, onClick}: Profil
   )
 }
 
-type TabBarProps = {
-  selectedTab: VisibleTab,
-  onTabClick: (tab: VisibleTab) => void,
-  username: string,
-  badgeNumbers: { [key: VisibleTab]: number },
-}
-
-export default function TabBar ({selectedTab, onTabClick, username, badgeNumbers}: TabBarProps) {
+export default function TabBar ({selectedTab, onTabClick, username, badgeNumbers}: Props) {
   return (
     <Box style={stylesTabBar}>
       <TabBarButton

@@ -60,10 +60,10 @@ const routeTree = new RouteDefNode({
         dumbSheet: {
           component: DumbSheet,
           tags: {modal: true},
-        }
-      }
+        },
+      },
     },
-  }
+  },
 })
 
 export default routeTree

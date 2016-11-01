@@ -7,7 +7,7 @@ const routeTree = new RouteDefNode({
   component: Search,
   children: {
     profile: profileRoutes,
-  }
+  },
 })
 
 export default routeTree

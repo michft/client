@@ -1,7 +1,6 @@
 // @flow
 import * as devicesActions from '../../actions/devices'
 import React, {Component} from 'react'
-import RemoveDevice from '../device-revoke'
 import Render from './index.render'
 import moment from 'moment'
 import {bindActionCreators} from 'redux'

@@ -1,21 +1,14 @@
 // @flow
-import {remote, ipcRenderer} from 'electron'
+import {ipcRenderer} from 'electron'
 
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import {globalStyles} from './styles'
-import MetaNavigator from './router/meta-navigator'
 import RenderRoute from './route-tree/render-route'
-import globalRoutes from './router/global-routes'
 import flags from './util/feature-flags'
-import {mapValues} from 'lodash'
 
-import {profileTab, folderTab, chatTab, peopleTab, devicesTab, settingsTab, loginTab} from './constants/tabs'
-import {navigateUp, resetRoute, setRouteState} from './actions/route-tree'
-import TabBar from './tab-bar/index.render'
+import {navigateUp, setRouteState} from './actions/route-tree'
 
 import type {RouteDefNode, RouteStateNode, Path} from './route-tree'
-import type {Tabs} from './constants/tabs'
 
 type Props = {
   menuBadge: boolean,
@@ -108,12 +101,6 @@ class Main extends Component<void, Props, void> {
       />
     )
   }
-}
-
-const stylesTabsContainer = {
-  ...globalStyles.flexBoxColumn,
-  flex: 1,
-  position: 'relative',
 }
 
 // $FlowIssue type this connector

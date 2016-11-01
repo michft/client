@@ -1,13 +1,11 @@
 // @flow
 import React, {Component} from 'react'
-import {TypedConnector} from '../../util/typed-connect'
 import {connect} from 'react-redux'
 import Invites from './index'
 import {invitesReclaim, invitesRefresh, invitesSend, notificationsSave, notificationsToggle} from '../../actions/settings'
 
 import type {Props} from './index'
 import type {TypedState} from '../../constants/reducer'
-import type {TypedDispatch} from '../../constants/types/flux'
 
 export type RouteState = {
   email: string,

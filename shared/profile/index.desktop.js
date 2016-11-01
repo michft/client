@@ -11,7 +11,6 @@ import {globalStyles, globalColors, globalMargins} from '../styles'
 import {normal as proofNormal, checking as proofChecking, metaUnreachable, metaPending} from '../constants/tracker'
 import {stateColors} from '../util/tracker'
 
-import type {Tab as FriendshipsTab} from './friendships'
 import type {Proof} from '../constants/tracker'
 import type {Props} from './index'
 

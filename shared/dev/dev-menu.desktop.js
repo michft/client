@@ -1,6 +1,6 @@
 // @flow
 import MenuList from '../settings/menu-list'
-import React, {Component} from 'react'
+import React from 'react'
 import engine from '../engine'
 import {BackButton, Box} from '../common-adapters'
 import {connect} from 'react-redux'

@@ -8,7 +8,7 @@ import {globalStyles, globalColors, globalMargins} from '../styles'
 
 type RevokedHeaderProps = {children?: Array<any>, onToggleExpanded: () => void}
 
-function RevokedHeader(props: RevokedHeaderProps) {
+function RevokedHeader (props: RevokedHeaderProps) {
   const iconType = props.expanded ? 'iconfont-caret-down' : 'iconfont-caret-right'
   return (
     <Box>

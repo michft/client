@@ -9,7 +9,7 @@ type LeafTagsParams = {
   modal: boolean,
 }
 
-export const LeafTags = I.Record({
+export const LeafTags: (spec?: LeafTagsParams) => LeafTagsParams & I.Record<LeafTagsParams> = I.Record({
   modal: false,
 })
 
@@ -28,12 +28,12 @@ type RouteDefParams<P> = {
   initialState?: {},
   children: {},
 } & (
-  { component?: Component<*,P,*> | Class<ConnectedComponent<P,*,*,*>> | Class<TypedConnectedComponent<P>> }
-  | { containerComponent: Component<*,P,*> }
+  { component?: Component<*, P, *> | Class<ConnectedComponent<P, *, *, *>> | Class<TypedConnectedComponent<P>> }
+  | { containerComponent: Component<*, P, *> }
 )
 
 export class RouteDefNode extends _RouteDefNode {
-  constructor({defaultSelected, component, containerComponent, tags, initialState, children}: RouteDefParams<*>) {
+  constructor ({defaultSelected, component, containerComponent, tags, initialState, children}: RouteDefParams<*>) {
     super({
       defaultSelected: defaultSelected || null,
       component,
@@ -48,7 +48,7 @@ export class RouteDefNode extends _RouteDefNode {
     })
   }
 
-  getChild(name: string): ?RouteDefNode {
+  getChild (name: string): ?RouteDefNode {
     const childDef = this.children.get(name)
     if (!childDef) {
       return
@@ -60,6 +60,12 @@ export class RouteDefNode extends _RouteDefNode {
   }
 }
 
+type RouteStateParams = {
+  selected: string | null,
+  props?: I.Map<string, any>,
+  state?: I.Map<string, any>,
+}
+
 const _RouteStateNode = I.Record({
   selected: null,
   props: I.Map(),
@@ -67,23 +73,16 @@ const _RouteStateNode = I.Record({
   children: I.Map(),
 })
 
-type RouteStateParams = {
-  selected: string | null,
-  props?: I.Map<string, any>,
-  state?: I.Map<string, any>,
-  children?: I.Map<string, _RouteStateNode>,
-}
-
 export class RouteStateNode extends _RouteStateNode {
-  constructor(data: RouteStateParams) {
-    super(data)
+  constructor ({selected, props, state}: RouteStateParams) {
+    super({selected, props, state})
   }
 
-  getChild(name: string): RouteStateNode {
+  getChild (name: string): RouteStateNode {
     return this.children.get(name)
   }
 
-  updateChild(name: string, op: (node: RouteStateNode) => ?RouteStateNode): RouteStateNode {
+  updateChild (name: string, op: (node: RouteStateNode) => ?RouteStateNode): RouteStateNode {
     return this.updateIn(['children', name], op)
   }
 }
@@ -94,7 +93,7 @@ export type Path = Iterable<string>
 type PathLike = Iterable<string | {selected: string | null}>
 export type PropsPath = I.IndexedIterable<{selected: string | null, props?: {}}>
 
-function _routeSet(routeDef: RouteDefNode, path: PropsPath, routeState: ?RouteStateNode): RouteStateNode {
+function _routeSet (routeDef: RouteDefNode, path: PropsPath, routeState: ?RouteStateNode): RouteStateNode {
   const pathHead = path && path.first()
 
   let newRouteState
@@ -126,7 +125,7 @@ function _routeSet(routeDef: RouteDefNode, path: PropsPath, routeState: ?RouteSt
   return newRouteState
 }
 
-export function routeSetProps(routeDef: RouteDefNode, pathProps: PathLike, routeState: ?RouteStateNode): RouteStateNode {
+export function routeSetProps (routeDef: RouteDefNode, pathProps: PathLike, routeState: ?RouteStateNode): RouteStateNode {
   const pathSeq = I.Seq(pathProps).map(item => {
     if (typeof item === 'string') {
       return {selected: item}
@@ -138,11 +137,11 @@ export function routeSetProps(routeDef: RouteDefNode, pathProps: PathLike, route
   return _routeSet(routeDef, pathSeq, routeState)
 }
 
-export function routeNavigate(routeDef: RouteDefNode, pathProps: PathLike, routeState: ?RouteStateNode): RouteStateNode {
+export function routeNavigate (routeDef: RouteDefNode, pathProps: PathLike, routeState: ?RouteStateNode): RouteStateNode {
   return routeSetProps(routeDef, I.List(pathProps).push({selected: null}), routeState)
 }
 
-export function routeSetState(routeDef: RouteDefNode, path: Path, routeState: RouteStateNode, partialState: {}): RouteStateNode {
+export function routeSetState (routeDef: RouteDefNode, path: Path, routeState: RouteStateNode, partialState: {}): RouteStateNode {
   const pathSeq = I.Seq(path)
   if (!pathSeq.size) {
     return routeState.update('state', state => state.merge(partialState))
@@ -152,7 +151,7 @@ export function routeSetState(routeDef: RouteDefNode, path: Path, routeState: Ro
   )
 }
 
-export function routeClear(path: Path, routeState: ?RouteStateNode): ?RouteStateNode {
+export function routeClear (path: Path, routeState: ?RouteStateNode): ?RouteStateNode {
   if (!routeState) {
     return null
   }
@@ -165,7 +164,7 @@ export function routeClear(path: Path, routeState: ?RouteStateNode): ?RouteState
   )
 }
 
-export function checkRouteState(routeDef: RouteDefNode, routeState: ?RouteStateNode) {
+export function checkRouteState (routeDef: RouteDefNode, routeState: ?RouteStateNode) {
   if (!routeDef) {
     return
   }
@@ -189,7 +188,7 @@ export function checkRouteState(routeDef: RouteDefNode, routeState: ?RouteStateN
   }
 }
 
-export function getPath(routeState: RouteStateNode) {
+export function getPath (routeState: RouteStateNode) {
   const path = []
   let curState = routeState
   while (curState && curState.selected !== null) {
@@ -199,6 +198,6 @@ export function getPath(routeState: RouteStateNode) {
   return I.List(path)
 }
 
-export function pathToString(path: Array<string> | I.IndexedIterable<string>) {
+export function pathToString (path: Array<string> | I.IndexedIterable<string>) {
   return '/' + path.join('/')
 }

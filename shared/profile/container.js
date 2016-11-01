@@ -29,7 +29,7 @@ type OwnProps = {
   routeProps: {
     username: ?string,
     uid: ?string,
-  }
+  },
 } & RouteProps<*, *>
 
 type EitherProps<P> = {
@@ -80,8 +80,8 @@ export default connect(
   (state, {routeProps, routeState, routePath}: OwnProps) => {
     const myUsername = state.config.username
     const myUid = state.config.uid
-    const username = !!routeProps.username ? routeProps.username : myUsername
-    const uid = !!routeProps.username ? routeProps.uid : myUid
+    const username = routeProps.username ? routeProps.username : myUsername
+    const uid = routeProps.username ? routeProps.uid : myUid
 
     return {
       username,
@@ -96,8 +96,8 @@ export default connect(
     onUserClick: (username, uid) => { dispatch(onUserClick(username, uid)) },
     onBack: () => { dispatch(navigateUp()) },
     onFolderClick: folder => { dispatch(openInKBFS(folder.path)) },
-    onEditProfile: () => { dispatch(routeAppend({selected: 'editprofile'})) },
-    onEditAvatar: () => { dispatch(routeAppend({selected: 'editavatar'})) },
+    onEditProfile: () => { dispatch(navigateAppend({selected: 'editprofile'})) },  //TODO
+    onEditAvatar: () => { dispatch(navigateAppend({selected: 'editavatar'})) },  //TODO
     onMissingProofClick: (missingProof: MissingProof) => { dispatch(addProof(missingProof.type)) },
     onRecheckProof: (proof: Proof) => { dispatch(checkSpecificProof(proof && proof.id)) },
     onRevokeProof: (proof: Proof) => {

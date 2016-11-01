@@ -5,7 +5,7 @@ import {Box, Button, Icon, Text} from '../../common-adapters'
 import {connect} from 'react-redux'
 import {navigateUp} from '../../actions/route-tree'
 
-import type {OwnProps, Props} from './index'
+import type {Props} from './index'
 
 class InviteGenerated extends Component<void, Props, void> {
   render () {

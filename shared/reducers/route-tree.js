@@ -18,7 +18,7 @@ export const State = I.Record({
 
 const initialState = State()
 
-function routeDefReducer(routeDef, action) {
+function routeDefReducer (routeDef, action) {
   switch (action.type) {
     case Constants.setRouteDef:
       return action.payload.routeDef
@@ -28,7 +28,7 @@ function routeDefReducer(routeDef, action) {
   }
 }
 
-function routeStateReducer(routeDef, routeState, action) {
+function routeStateReducer (routeDef, routeState, action) {
   switch (action.type) {
     case Constants.setRouteDef:
       let newRouteState

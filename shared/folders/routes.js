@@ -28,7 +28,7 @@ const routeTree = new RouteDefNode({
       initialState: {showingIgnored: false},
       children: filesSubTree,
     },
-  }
+  },
 })
 
 export default routeTree

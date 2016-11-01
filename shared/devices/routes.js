@@ -8,7 +8,7 @@ import RemoveDevice from './device-revoke'
 
 const routeTree = new RouteDefNode({
   component: Devices,
-  initialState: { showingRevoked: false },
+  initialState: {showingRevoked: false},
   children: {
     codePage: {
       component: CodePage,
@@ -22,7 +22,7 @@ const routeTree = new RouteDefNode({
         removeDevice: {
           component: RemoveDevice,
         },
-      }
+      },
     },
   },
 })

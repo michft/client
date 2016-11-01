@@ -5,6 +5,7 @@ type ChatTab = 'tabs:chatTab'
 export const chatTab = 'tabs:chatTab'
 type LoginTab = 'tabs:loginTab'
 export const loginTab = 'tabs:loginTab'
+//TODO cleanup
 
 type ProfileTab = 'tabs:profile'
 export const profileTab = 'tabs:profile'
