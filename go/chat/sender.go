@@ -2,7 +2,6 @@ package chat
 
 import (
 	"encoding/binary"
-	"sync"
 	"time"
 
 	"github.com/keybase/client/go/chat/storage"
@@ -53,12 +52,11 @@ func (s *CachingSender) Send(ctx context.Context, convID chat1.ConversationID,
 type NonblockingSender struct {
 	libkb.Contextified
 
-	sender Sender
-	outbox *storage.Outbox
+	sender     Sender
+	outbox     *storage.Outbox
+	msgSentCh  chan struct{}
+	shutdownCh chan struct{}
 }
-
-var deliverLoopOnce sync.Once
-var msgSentCh chan struct{}
 
 func NewNonblockingSender(g *libkb.GlobalContext, sender Sender) *NonblockingSender {
 
@@ -66,13 +64,18 @@ func NewNonblockingSender(g *libkb.GlobalContext, sender Sender) *NonblockingSen
 		Contextified: libkb.NewContextified(g),
 		sender:       sender,
 		outbox:       storage.NewOutbox(g),
+		msgSentCh:    make(chan struct{}),
+		shutdownCh:   make(chan struct{}),
 	}
 
-	// Start up deliver routine
-	deliverLoopOnce.Do(func() {
-		msgSentCh = make(chan struct{}, 100)
-		go s.deliverLoop()
+	// Shut this thing down on service shutdown
+	g.PushShutdownHook(func() error {
+		s.shutdownCh <- struct{}{}
+		return nil
 	})
+
+	// Start up deliver routine
+	go s.deliverLoop()
 
 	return s
 }
@@ -87,16 +90,19 @@ func (s *NonblockingSender) Send(ctx context.Context, convID chat1.ConversationI
 	}
 
 	// Alert the deliver loop it should wake up
-	msgSentCh <- struct{}{}
+	s.msgSentCh <- struct{}{}
 
-	return oid, nil, nil
+	return oid, &chat1.RateLimit{}, nil
 }
 
 func (s *NonblockingSender) deliverLoop() {
 	for {
 		// Wait for the signal to take action
 		select {
-		case <-msgSentCh:
+		case <-s.shutdownCh:
+			s.G().Log.Debug("shuttting down outbox deliver loop")
+			return
+		case <-s.msgSentCh:
 			s.G().Log.Debug("flushing outbox on new message")
 		case <-s.G().Clock().After(time.Minute):
 		}
@@ -130,8 +136,12 @@ func (s *NonblockingSender) deliverLoop() {
 				keybase1.UID(obr.Msg.ClientHeader.Sender.String()), &activity)
 			pops++
 		}
-		if err = s.outbox.PopN(pops); err != nil {
-			s.G().Log.Error("failed to clear messages from outbox: err: %s", err.Error())
+
+		// Clear out outbox
+		if pops > 0 {
+			if err = s.outbox.PopN(pops); err != nil {
+				s.G().Log.Error("failed to clear messages from outbox: err: %s", err.Error())
+			}
 		}
 	}
 }
