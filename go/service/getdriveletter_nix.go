@@ -9,6 +9,6 @@ import (
 	"github.com/keybase/go-updater/watchdog"
 )
 
-func getDriveLetter(log logger.Logger) (string, error) {
-	return "", fmt.Errorf("getDriveLetter is Windows only", runMode)
+func getMountDirs() []string {
+	return "", fmt.Errorf("getMountDirs is Windows only", runMode)
 }

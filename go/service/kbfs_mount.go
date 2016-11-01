@@ -28,7 +28,7 @@ func (h *KBFSMountHandler) GetCurrentMountDir(ctx context.Context) (res string, 
 }
 
 func (h *KBFSMountHandler) GetAllAvailableMountDirs(ctx context.Context) (res []string, err error) {
-	return getDriveLetters(false), nil
+	return getMountDirs(), nil
 }
 
 func (h *KBFSMountHandler) SetCurrentMountDir(_ context.Context, drive string) (err error) {
