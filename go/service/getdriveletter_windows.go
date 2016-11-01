@@ -64,7 +64,6 @@ func getDosVolumeName(path string) (string, error) {
 	}
 
 	return syscall.UTF16ToString(VolumeNameBuffer), nil
-
 }
 
 func isCdRom(path string) bool {
